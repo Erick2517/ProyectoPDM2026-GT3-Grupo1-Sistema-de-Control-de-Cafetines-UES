@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">ProyectoPDM2026-GT3-Grupo1-Sistema-de-Control-de-Cafetines-UES</string>
+    <string name="app_name">Cafetines UES</string>
+    <string name="lbl_inicia_sesion">Inicia sesión para hacer tu pedido</string>
+    <string name="lbl_username">Corero Institucional</string>
+    <string name="lbl_pass">Contraseña</string>
+    <string name="lbl_btnIniciar">Iniciar Sesión</string>
+    <string name="lbl_crearCuenta">¿No tienes cuenta? Regístrate.</string>
+    <string name="lbl_email_ej">usuario@ues.edu.sv</string>
 </resources>
