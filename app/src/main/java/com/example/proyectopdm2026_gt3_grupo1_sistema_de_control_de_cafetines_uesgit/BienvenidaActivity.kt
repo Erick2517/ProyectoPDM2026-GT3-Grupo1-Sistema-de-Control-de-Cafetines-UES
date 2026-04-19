@@ -3,6 +3,7 @@ package com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_u
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +18,10 @@ class BienvenidaActivity : AppCompatActivity() {
 
         val btnLogOut = findViewById<Button>(R.id.btnCerrarSesion)
         val btnVerLocales = findViewById<Button>(R.id.btnVerLocales)
+        val btnLocalCentral = findViewById<Button>(R.id.btnLocalCentral)
+        val btnLocalIng = findViewById<Button>(R.id.btnLocalIngenieria)
+        val local1 = findViewById<LinearLayout>(R.id.local1)
+        val local2 = findViewById<LinearLayout>(R.id.local2)
 
         btnLogOut.setOnClickListener {
             val intent = Intent(
@@ -31,6 +36,36 @@ class BienvenidaActivity : AppCompatActivity() {
             val intent = Intent(
                 this,
                 LocalesActivity::class.java
+            )
+            startActivity(intent)
+        }
+
+        btnLocalCentral.setOnClickListener {
+            val intent = Intent(
+                this,
+                ProductosActivity::class.java
+            )
+            startActivity(intent)
+        }
+        btnLocalIng.setOnClickListener {
+            val intent = Intent(
+                this,
+                ProductosActivity::class.java
+            )
+            startActivity(intent)
+        }
+
+        local1.setOnClickListener {
+            val intent = Intent(
+                this,
+                ProductosActivity::class.java
+            )
+            startActivity(intent)
+        }
+        local2.setOnClickListener {
+            val intent = Intent(
+                this,
+                ProductosActivity::class.java
             )
             startActivity(intent)
         }
