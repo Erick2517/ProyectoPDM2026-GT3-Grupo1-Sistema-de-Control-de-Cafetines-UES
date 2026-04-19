@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ProyectoPDM2026GT3Grupo1SistemadeControldeCafetinesUES">
         <activity
+            android:name=".RegistroActivity"
+            android:exported="false" />
+        <activity
             android:name=".BienvenidaActivity"
             android:exported="false" />
         <activity

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".RegistroActivity">
+
+    <!-- Scroll -->
+    <ScrollView
+        android:id="@+id/scrollRegistro"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Contenedor vertical -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp">
+
+            <!-- Título -->
+            <TextView
+                android:id="@+id/tvTituloRegistro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Crear cuenta"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Subtítulo -->
+            <TextView
+                android:id="@+id/tvSubtituloRegistro"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Regístrate con tu correo institucional"
+                android:gravity="center"
+                android:layout_marginBottom="24dp" />
+
+            <!-- Nombre -->
+            <EditText
+                android:id="@+id/etNombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Nombre completo"
+                android:layout_marginBottom="16dp"
+                android:padding="12dp" />
+
+            <!-- Correo -->
+            <EditText
+                android:id="@+id/etCorreo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="usuario@ues.edu.sv"
+                android:inputType="textEmailAddress"
+                android:layout_marginBottom="16dp"
+                android:padding="12dp" />
+
+            <!-- Carnet -->
+            <EditText
+                android:id="@+id/etCarnet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="AA12345"
+                android:layout_marginBottom="16dp"
+                android:padding="12dp" />
+
+            <!-- Contraseña -->
+            <EditText
+                android:id="@+id/etPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Contraseña"
+                android:inputType="textPassword"
+                android:layout_marginBottom="16dp"
+                android:padding="12dp" />
+
+            <!-- Confirmar contraseña -->
+            <EditText
+                android:id="@+id/etConfirmPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Confirmar contraseña"
+                android:inputType="textPassword"
+                android:layout_marginBottom="16dp"
+                android:padding="12dp" />
+
+            <!-- Spinner ubicación -->
+            <Spinner
+                android:id="@+id/spUbicacion"
+                android:layout_width="match_parent"
+                android:layout_height="53dp"
+                android:layout_marginBottom="24dp"
+                android:spinnerMode="dropdown" />
+
+            <!-- Botón registrar -->
+            <Button
+                android:id="@+id/btnRegistrar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Regístrate"
+                android:layout_marginBottom="16dp"
+                android:padding="14dp"
+                android:backgroundTint="@color/wine"
+                />
+
+            <!-- Ir a Login -->
+            <TextView
+                android:id="@+id/lbl_login"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="¿Ya tienes cuenta? Inicia sesión"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:textColor="#9B1B1B"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
