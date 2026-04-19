@@ -9,26 +9,28 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-class LocalesActivity : AppCompatActivity() {
+class ProductosActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_locales)
+        setContentView(R.layout.activity_productos)
 
         val btnBack = findViewById<ImageView>(R.id.btnBack)
-        val cardLocal = findViewById<LinearLayout>(R.id.local1)
+        //val cardLocal = findViewById<LinearLayout>(R.id.local1)
 
         btnBack.setOnClickListener {
             finish()
         }
 
-        cardLocal.setOnClickListener {
+        /*cardLocal.setOnClickListener {
             val intent = Intent(
                 this,
                 ProductosActivity::class.java
             )
             startActivity(intent)
-        }
+            finish()
+        }*/
+
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())

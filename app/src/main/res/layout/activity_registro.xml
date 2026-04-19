@@ -46,6 +46,13 @@
                 android:layout_marginBottom="24dp" />
 
             <!-- Nombre -->
+            <TextView
+                android:id="@+id/lblNombre"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Nombre"
+                android:gravity="left"
+                android:layout_marginBottom="5dp" />
             <EditText
                 android:id="@+id/etNombre"
                 android:layout_width="match_parent"
@@ -55,6 +62,13 @@
                 android:padding="12dp" />
 
             <!-- Correo -->
+            <TextView
+                android:id="@+id/lbl_correo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Correo Institucional"
+                android:gravity="left"
+                android:layout_marginBottom="5dp" />
             <EditText
                 android:id="@+id/etCorreo"
                 android:layout_width="match_parent"
@@ -65,6 +79,13 @@
                 android:padding="12dp" />
 
             <!-- Carnet -->
+            <TextView
+                android:id="@+id/lbl_carnet"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Carnet"
+                android:gravity="left"
+                android:layout_marginBottom="5dp" />
             <EditText
                 android:id="@+id/etCarnet"
                 android:layout_width="match_parent"
@@ -74,6 +95,13 @@
                 android:padding="12dp" />
 
             <!-- Contraseña -->
+            <TextView
+                android:id="@+id/lbl_pass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Contraseña"
+                android:gravity="left"
+                android:layout_marginBottom="5dp" />
             <EditText
                 android:id="@+id/etPassword"
                 android:layout_width="match_parent"
@@ -84,6 +112,13 @@
                 android:padding="12dp" />
 
             <!-- Confirmar contraseña -->
+            <TextView
+                android:id="@+id/lbl_confirmar_pass"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Confirmar Contraseña"
+                android:gravity="left"
+                android:layout_marginBottom="5dp" />
             <EditText
                 android:id="@+id/etConfirmPassword"
                 android:layout_width="match_parent"
@@ -94,6 +129,13 @@
                 android:padding="12dp" />
 
             <!-- Spinner ubicación -->
+            <TextView
+                android:id="@+id/lbl_ubicacion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Seleccionar ubicación"
+                android:gravity="left"
+                android:layout_marginBottom="5dp" />
             <Spinner
                 android:id="@+id/spUbicacion"
                 android:layout_width="match_parent"
