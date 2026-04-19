@@ -9,26 +9,26 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-class CarritoActivity : AppCompatActivity() {
+class PagoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_carrito)
+        setContentView(R.layout.activity_pago)
 
         val btnBack = findViewById<ImageView>(R.id.btnBack)
-        val btnConfirmar = findViewById<Button>(R.id.btnConfirmarPedido)
+        val btnConfirmar = findViewById<Button>(R.id.btnConfirmar)
 
         btnBack.setOnClickListener {
             finish()
         }
 
-        btnConfirmar.setOnClickListener {
+        /*btnConfirmar.setOnClickListener {
             val intent = Intent(
                 this,
                 PagoActivity::class.java
             )
             startActivity(intent)
-        }
+        }*/
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
