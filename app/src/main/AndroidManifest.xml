@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ProyectoPDM2026GT3Grupo1SistemadeControldeCafetinesUES">
         <activity
+            android:name=".NuevoLocalActivity"
+            android:exported="false" />
+        <activity
             android:name=".GestionarUsuariosActivity"
             android:exported="false" />
         <activity

@@ -9,24 +9,25 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-class GestionarLocalesActivity : AppCompatActivity() {
+class NuevoLocalActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_gestionar_locales)
+        setContentView(R.layout.activity_nuevo_local)
 
         val btnBack = findViewById<ImageView>(R.id.btnBack)
         btnBack.setOnClickListener {
             finish()
         }
 
-        val btnAddLocal = findViewById<Button>(R.id.btnAgregarLocal)
+        val btnAddLocal = findViewById<Button>(R.id.btnGuardar)
         btnAddLocal.setOnClickListener {
             val intent = Intent(
                 this,
                 NuevoLocalActivity::class.java
             )
             startActivity(intent)
+            finish()
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->

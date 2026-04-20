@@ -10,4 +10,8 @@
         <item>Local Central</item>
         <item>Local Ingeniería</item>
     </string-array>
+    <string-array name="estados_local">
+        <item>Local Central</item>
+        <item>Local Ingeniería</item>
+    </string-array>
 </resources>
