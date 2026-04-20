@@ -51,13 +51,13 @@ class BienvenidaActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        /*btnPedidosEsp.setOnClickListener {
+        btnPedidosEsp.setOnClickListener {
             val intent = Intent(
                 this,
                 PedidoEspecialActivity::class.java
             )
             startActivity(intent)
-        }*/
+        }
 
         btnLocalCentral.setOnClickListener {
             val intent = Intent(
