@@ -14,4 +14,8 @@
         <item>Local Central</item>
         <item>Local Ingeniería</item>
     </string-array>
+    <string-array name="tipos_prod">
+        <item>Antojito</item>
+        <item>Desayuno</item>
+    </string-array>
 </resources>
