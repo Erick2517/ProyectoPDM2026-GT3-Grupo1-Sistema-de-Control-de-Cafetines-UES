@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Cafetines UES</string>
     <string name="lbl_inicia_sesion">Inicia sesión para hacer tu pedido</string>
-    <string name="lbl_username">Corero Institucional</string>
+    <string name="lbl_username">Correo Institucional</string>
     <string name="lbl_pass">Contraseña</string>
     <string name="lbl_btnIniciar">Iniciar Sesión</string>
     <string name="lbl_crearCuenta">¿No tienes cuenta? Regístrate.</string>

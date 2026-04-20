@@ -99,7 +99,6 @@
                     android:id="@+id/imgProducto"
                     android:layout_width="85dp"
                     android:layout_height="80dp"
-                    android:scaleType="fitCenter"
                     tools:src="@drawable/logo_ues" />
 
                 <!-- Contenido derecho -->

@@ -88,7 +88,6 @@
                     android:id="@+id/imgProductoCarrito"
                     android:layout_width="100dp"
                     android:layout_height="80dp"
-                    android:scaleType="fitCenter"
                     tools:src="@drawable/logo_ues" />
 
                 <LinearLayout

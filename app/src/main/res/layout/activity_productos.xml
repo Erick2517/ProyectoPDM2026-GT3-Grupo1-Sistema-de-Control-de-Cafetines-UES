@@ -106,7 +106,6 @@
                     android:id="@+id/imgProducto"
                     android:layout_width="100dp"
                     android:layout_height="80dp"
-                    android:scaleType="centerCrop"
                     tools:src="@drawable/logo_ues"/>
 
                 <!-- Contenido derecho -->
