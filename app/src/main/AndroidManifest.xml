@@ -12,6 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ProyectoPDM2026GT3Grupo1SistemadeControldeCafetinesUES">
         <activity
+            android:name=".ControlPedidosActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PanelEncargadoActivity"
+            android:exported="false" />
+        <activity
             android:name=".NuevoProductoActivity"
             android:exported="false" />
         <activity
