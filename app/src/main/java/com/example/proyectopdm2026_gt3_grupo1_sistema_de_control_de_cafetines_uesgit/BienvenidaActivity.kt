@@ -18,6 +18,9 @@ class BienvenidaActivity : AppCompatActivity() {
 
         val btnLogOut = findViewById<Button>(R.id.btnCerrarSesion)
         val btnVerLocales = findViewById<Button>(R.id.btnVerLocales)
+        val btnMisPedidos = findViewById<Button>(R.id.btnMisPedidos)
+        val btnPedidosEsp = findViewById<Button>(R.id.btnPedidoEspecial)
+
         val btnLocalCentral = findViewById<Button>(R.id.btnLocalCentral)
         val btnLocalIng = findViewById<Button>(R.id.btnLocalIngenieria)
         val local1 = findViewById<LinearLayout>(R.id.local1)
@@ -39,6 +42,22 @@ class BienvenidaActivity : AppCompatActivity() {
             )
             startActivity(intent)
         }
+
+        btnMisPedidos.setOnClickListener {
+            val intent = Intent(
+                this,
+                MisPedidosActivity::class.java
+            )
+            startActivity(intent)
+        }
+
+        /*btnPedidosEsp.setOnClickListener {
+            val intent = Intent(
+                this,
+                PedidoEspecialActivity::class.java
+            )
+            startActivity(intent)
+        }*/
 
         btnLocalCentral.setOnClickListener {
             val intent = Intent(

@@ -3,39 +3,28 @@ package com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_u
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
-import android.widget.TextView
+import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-class ConfirmarPagoActivity : AppCompatActivity() {
+class MisPedidosActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_confirmar_pago)
+        setContentView(R.layout.activity_mis_pedidos)
 
-        val btnVerPedidos = findViewById<Button>(R.id.btnVerPedidos)
-        val lblRegresarInicio = findViewById<TextView>(R.id.lblVolverInicio);
+        val btnBack = findViewById<ImageView>(R.id.btnBack);
 
-        btnVerPedidos.setOnClickListener {
-            val intent = Intent(
-                this,
-                MisPedidosActivity::class.java
-            )
-            startActivity(intent)
-            finish()
-        }
-
-        lblRegresarInicio.setOnClickListener {
+        btnBack.setOnClickListener {
             val intent = Intent(
                 this,
                 BienvenidaActivity::class.java
             )
             startActivity(intent)
-            finish()
+            finish();
         }
-
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
