@@ -86,10 +86,32 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtPass" />
 
+    <Button
+        android:id="@+id/btnAdmin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/wine"
+        android:text="Administrador"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lbl_registrarse"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="10dp"/>
+
+    <Button
+        android:id="@+id/btnEncargado"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/wine"
+        android:text="Encargado"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/lbl_registrarse"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="10dp"/>
+
     <TextView
         android:id="@+id/lbl_registrarse"
-        android:layout_width="279dp"
-        android:layout_height="52dp"
+        android:layout_width="277dp"
+        android:layout_height="27dp"
         android:layout_marginTop="20dp"
         android:background="?attr/selectableItemBackground"
         android:clickable="true"

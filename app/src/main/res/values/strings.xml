@@ -6,4 +6,8 @@
     <string name="lbl_btnIniciar">Iniciar Sesión</string>
     <string name="lbl_crearCuenta">¿No tienes cuenta? Regístrate.</string>
     <string name="lbl_email_ej">usuario@ues.edu.sv</string>
+    <string-array name="Listlocales">
+        <item>Local Central</item>
+        <item>Local Ingeniería</item>
+    </string-array>
 </resources>

@@ -12,6 +12,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ProyectoPDM2026GT3Grupo1SistemadeControldeCafetinesUES">
         <activity
+            android:name=".GestionarUsuariosActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GestionarLocalesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GestionarProductos"
+            android:exported="false" />
+        <activity
+            android:name=".PanelAdminActivity"
+            android:exported="false" />
+        <activity
+            android:name=".DetallePedidoActivity"
+            android:exported="false" />
+        <activity
             android:name=".PedidoEspecialActivity"
             android:exported="false" />
         <activity

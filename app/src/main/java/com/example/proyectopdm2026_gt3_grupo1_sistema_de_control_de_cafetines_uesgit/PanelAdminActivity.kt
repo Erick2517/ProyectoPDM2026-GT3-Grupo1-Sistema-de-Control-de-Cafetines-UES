@@ -2,49 +2,53 @@ package com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_u
 
 import android.content.Intent
 import android.os.Bundle
-import android.provider.Settings
 import android.widget.Button
-import android.widget.TextView
+import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
-class LoginActivity : AppCompatActivity() {
+class PanelAdminActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_login)
+        setContentView(R.layout.activity_panel_admin)
 
-        val btnLogin = findViewById<Button>(R.id.btnLogin)
-        val lblRegistrarse = findViewById<TextView>(R.id.lbl_registrarse);
-        val btnAdmin = findViewById<Button>(R.id.btnAdmin)
-
-        btnLogin.setOnClickListener {
+        val btnLogOut = findViewById<Button>(R.id.btnCerrarSesion)
+        btnLogOut.setOnClickListener {
             val intent = Intent(
                 this,
-                BienvenidaActivity::class.java
+                LoginActivity::class.java
             )
             startActivity(intent)
             finish()
         }
 
-        btnAdmin.setOnClickListener {
-            val intent = Intent(
-                this,
-                PanelAdminActivity::class.java
-            )
-            startActivity(intent)
-            finish()
-        }
+        val crdGestionarProductos = findViewById<LinearLayout>(R.id.crdGestionarProductos)
+        val crdGestionarLocales = findViewById<LinearLayout>(R.id.crdGestionarLocales)
+        val crdGestionarUsuarios = findViewById<LinearLayout>(R.id.crdGestionarUsuarios)
 
-        lblRegistrarse.setOnClickListener {
+        crdGestionarProductos.setOnClickListener {
             val intent = Intent(
                 this,
-                RegistroActivity::class.java
+                GestionarProductos::class.java
             )
             startActivity(intent)
-            finish()
+        }
+        crdGestionarLocales.setOnClickListener {
+            val intent = Intent(
+                this,
+                GestionarLocalesActivity::class.java
+            )
+            startActivity(intent)
+        }
+        crdGestionarUsuarios.setOnClickListener {
+            val intent = Intent(
+                this,
+                GestionarUsuariosActivity::class.java
+            )
+            startActivity(intent)
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -52,6 +56,5 @@ class LoginActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
     }
 }
