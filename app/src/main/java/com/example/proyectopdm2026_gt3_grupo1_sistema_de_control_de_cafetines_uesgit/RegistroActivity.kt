@@ -15,7 +15,7 @@ class RegistroActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_registro)
 
-        val lblLogin = findViewById<TextView>(R.id.lbl_login);
+        val lblLogin = findViewById<TextView>(R.id.lblLogin)
         val btnRegistrar = findViewById<Button>(R.id.btnRegistrar);
 
         lblLogin.setOnClickListener {

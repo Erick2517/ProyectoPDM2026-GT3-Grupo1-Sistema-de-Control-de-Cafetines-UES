@@ -2,135 +2,129 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+    android:id="@+id/layoutLogin"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginActivity"
-    >
+    tools:context=".LoginActivity">
 
-    <EditText
-        android:id="@+id/txtPass"
-        android:layout_width="251dp"
-        android:layout_height="52dp"
+    <ImageView
+        android:id="@+id/imgLogo"
+        android:layout_width="145dp"
+        android:layout_height="210dp"
         android:layout_marginTop="10dp"
-        android:ems="10"
-        android:hint="**********"
-        android:inputType="text|textPassword"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView4" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/logo_ues" />
 
     <TextView
-        android:id="@+id/textView4"
+        android:id="@+id/lblAppName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/lbl_pass"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtEmail" />
-
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:text="@string/app_name"
         android:textSize="24sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/imgLogo"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
-        android:id="@+id/textView2"
+        android:id="@+id/lblIniciaSesion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
         android:text="@string/lbl_inicia_sesion"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/lblAppName"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/lblCorreo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
         android:text="@string/lbl_username"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="40dp"
+        app:layout_constraintTop_toBottomOf="@+id/lblIniciaSesion"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <EditText
-        android:id="@+id/txtEmail"
-        android:layout_width="261dp"
-        android:layout_height="49dp"
-        android:layout_marginTop="10dp"
-        android:ems="10"
+        android:id="@+id/txtCorreo"
+        android:layout_width="260dp"
+        android:layout_height="50dp"
         android:hint="@string/lbl_email_ej"
         android:inputType="textEmailAddress"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/lblCorreo"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3"
-        />
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/lblPassword"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lbl_pass"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/txtCorreo"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <EditText
+        android:id="@+id/txtPassword"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
+        android:hint="@string/hint_password"
+        android:inputType="textPassword"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/lblPassword"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/btnLogin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
         android:text="@string/lbl_btnIniciar"
         android:backgroundTint="@color/wine"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@+id/txtPassword"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtPass" />
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/lblRegistrarse"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/lbl_crearCuenta"
+        android:textStyle="bold"
+        android:textColor="#9B1B1B"
+        android:layout_marginTop="20dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintTop_toBottomOf="@+id/btnLogin"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <Button
         android:id="@+id/btnAdmin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/lbl_admin"
         android:backgroundTint="@color/wine"
-        android:text="Administrador"
+        android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/lblRegistrarse"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lbl_registrarse"
-        android:layout_marginLeft="30dp"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginStart="30dp" />
 
     <Button
         android:id="@+id/btnEncargado"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/lbl_encargado"
         android:backgroundTint="@color/wine"
-        android:text="Encargado"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lbl_registrarse"
-        android:layout_marginRight="30dp"
-        android:layout_marginTop="10dp"/>
-
-    <TextView
-        android:id="@+id/lbl_registrarse"
-        android:layout_width="277dp"
-        android:layout_height="27dp"
-        android:layout_marginTop="20dp"
-        android:background="?attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true"
-        android:text="@string/lbl_crearCuenta"
-        android:textAlignment="center"
-        android:textColor="#9B1B1B"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnLogin" />
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="145dp"
-        android:layout_height="210dp"
         android:layout_marginTop="10dp"
+        app:layout_constraintTop_toBottomOf="@+id/lblRegistrarse"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/logo_ues" />
+        android:layout_marginEnd="30dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

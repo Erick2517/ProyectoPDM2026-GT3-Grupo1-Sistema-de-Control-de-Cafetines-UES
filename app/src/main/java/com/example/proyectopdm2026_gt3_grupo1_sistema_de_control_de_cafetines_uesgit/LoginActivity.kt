@@ -17,7 +17,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
 
         val btnLogin = findViewById<Button>(R.id.btnLogin)
-        val lblRegistrarse = findViewById<TextView>(R.id.lbl_registrarse);
+        val lblRegistrarse = findViewById<TextView>(R.id.lblRegistrarse);
         val btnAdmin = findViewById<Button>(R.id.btnAdmin)
         val btnEncargado = findViewById<Button>(R.id.btnEncargado)
 
@@ -56,7 +56,7 @@ class LoginActivity : AppCompatActivity() {
             finish()
         }
 
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.layoutLogin)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets

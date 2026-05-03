@@ -6,14 +6,34 @@
     <string name="lbl_btnIniciar">Iniciar Sesión</string>
     <string name="lbl_crearCuenta">¿No tienes cuenta? Regístrate.</string>
     <string name="lbl_email_ej">usuario@ues.edu.sv</string>
+    <string name="hint_password">**********</string>
+    <string name="lbl_admin">Administrador</string>
+    <string name="lbl_encargado">Encargado</string>
+
+
+    <string name="lbl_crear_cuenta">Crear cuenta</string>
+    <string name="lbl_subtitulo_registro">Regístrate con tu correo institucional</string>
+    <string name="lbl_nombre">Nombre</string>
+    <string name="hint_nombre">Nombre completo</string>
+    <string name="lbl_carnet">Carnet</string>
+    <string name="hint_carnet">AA12345</string>
+    <string name="lbl_confirmar_password">Confirmar Contraseña</string>
+    <string name="hint_confirmar_password">Confirmar contraseña</string>
+    <string name="lbl_ubicacion">Seleccionar ubicación</string>
+    <string name="lbl_btn_registrar">Regístrate</string>
+    <string name="lbl_ir_login">¿Ya tienes cuenta? Inicia sesión</string>
+
+    
     <string-array name="Listlocales">
         <item>Local Central</item>
         <item>Local Ingeniería</item>
     </string-array>
+
     <string-array name="estados_local">
         <item>Local Central</item>
         <item>Local Ingeniería</item>
     </string-array>
+
     <string-array name="tipos_prod">
         <item>Antojito</item>
         <item>Desayuno</item>

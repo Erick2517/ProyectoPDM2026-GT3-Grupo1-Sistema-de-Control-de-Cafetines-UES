@@ -8,7 +8,6 @@
     android:layout_height="match_parent"
     tools:context=".RegistroActivity">
 
-    <!-- Scroll -->
     <ScrollView
         android:id="@+id/scrollRegistro"
         android:layout_width="0dp"
@@ -18,124 +17,115 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Contenedor vertical -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="24dp">
 
-            <!-- Título -->
             <TextView
-                android:id="@+id/tvTituloRegistro"
+                android:id="@+id/lblTituloRegistro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Crear cuenta"
+                android:text="@string/lbl_crear_cuenta"
                 android:textSize="28sp"
                 android:textStyle="bold"
                 android:gravity="center"
                 android:layout_marginBottom="8dp" />
 
-            <!-- Subtítulo -->
             <TextView
-                android:id="@+id/tvSubtituloRegistro"
+                android:id="@+id/lblSubtituloRegistro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Regístrate con tu correo institucional"
+                android:text="@string/lbl_subtitulo_registro"
                 android:gravity="center"
                 android:layout_marginBottom="24dp" />
 
-            <!-- Nombre -->
             <TextView
                 android:id="@+id/lblNombre"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Nombre"
-                android:gravity="left"
+                android:text="@string/lbl_nombre"
                 android:layout_marginBottom="5dp" />
+
             <EditText
-                android:id="@+id/etNombre"
+                android:id="@+id/txtNombre"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Nombre completo"
+                android:hint="@string/hint_nombre"
                 android:layout_marginBottom="16dp"
                 android:padding="12dp" />
 
-            <!-- Correo -->
             <TextView
-                android:id="@+id/lbl_correo"
+                android:id="@+id/lblCorreo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Correo Institucional"
-                android:gravity="left"
+                android:text="@string/lbl_username"
                 android:layout_marginBottom="5dp" />
+
             <EditText
-                android:id="@+id/etCorreo"
+                android:id="@+id/txtCorreo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="usuario@ues.edu.sv"
+                android:hint="@string/lbl_email_ej"
                 android:inputType="textEmailAddress"
                 android:layout_marginBottom="16dp"
                 android:padding="12dp" />
 
-            <!-- Carnet -->
             <TextView
-                android:id="@+id/lbl_carnet"
+                android:id="@+id/lblCarnet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Carnet"
-                android:gravity="left"
+                android:text="@string/lbl_carnet"
                 android:layout_marginBottom="5dp" />
+
             <EditText
-                android:id="@+id/etCarnet"
+                android:id="@+id/txtCarnet"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="AA12345"
+                android:hint="@string/hint_carnet"
                 android:layout_marginBottom="16dp"
                 android:padding="12dp" />
 
-            <!-- Contraseña -->
             <TextView
-                android:id="@+id/lbl_pass"
+                android:id="@+id/lblPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Contraseña"
-                android:gravity="left"
+                android:text="@string/lbl_pass"
                 android:layout_marginBottom="5dp" />
+
             <EditText
-                android:id="@+id/etPassword"
+                android:id="@+id/txtPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Contraseña"
+                android:hint="@string/hint_password"
                 android:inputType="textPassword"
                 android:layout_marginBottom="16dp"
                 android:padding="12dp" />
 
-            <!-- Confirmar contraseña -->
             <TextView
-                android:id="@+id/lbl_confirmar_pass"
+                android:id="@+id/lblConfirmarPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Confirmar Contraseña"
-                android:gravity="left"
+                android:text="@string/lbl_confirmar_password"
                 android:layout_marginBottom="5dp" />
+
             <EditText
-                android:id="@+id/etConfirmPassword"
+                android:id="@+id/txtConfirmPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Confirmar contraseña"
+                android:hint="@string/hint_confirmar_password"
                 android:inputType="textPassword"
                 android:layout_marginBottom="16dp"
                 android:padding="12dp" />
 
-            <!-- Spinner ubicación -->
             <TextView
-                android:id="@+id/lbl_ubicacion"
+                android:id="@+id/lblUbicacion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Seleccionar ubicación"
-                android:gravity="left"
+                android:text="@string/lbl_ubicacion"
                 android:layout_marginBottom="5dp" />
+
             <Spinner
                 android:id="@+id/spUbicacion"
                 android:layout_width="match_parent"
@@ -143,23 +133,20 @@
                 android:layout_marginBottom="24dp"
                 android:spinnerMode="dropdown" />
 
-            <!-- Botón registrar -->
             <Button
                 android:id="@+id/btnRegistrar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Regístrate"
+                android:text="@string/lbl_btn_registrar"
                 android:layout_marginBottom="16dp"
                 android:padding="14dp"
-                android:backgroundTint="@color/wine"
-                />
+                android:backgroundTint="@color/wine" />
 
-            <!-- Ir a Login -->
             <TextView
-                android:id="@+id/lbl_login"
+                android:id="@+id/lblLogin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="¿Ya tienes cuenta? Inicia sesión"
+                android:text="@string/lbl_ir_login"
                 android:gravity="center"
                 android:textAlignment="center"
                 android:textColor="#9B1B1B"
