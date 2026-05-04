@@ -23,7 +23,29 @@
     <string name="lbl_btn_registrar">Regístrate</string>
     <string name="lbl_ir_login">¿Ya tienes cuenta? Inicia sesión</string>
 
-    
+
+
+
+    <!-- BIENVENIDA -->
+    <string name="tv_saludo">Hola, Usuario</string>
+    <string name="tv_pregunta">¿Qué deseas pedir hoy?</string>
+    <string name="tv_destacados">Locales destacados</string>
+    <string name="tv_locales">Locales</string>
+
+    <!-- BOTONES PRINCIPALES -->
+    <string name="btnVerLocales">Ver locales</string>
+    <string name="btn_mis_pedidos">Mis pedidos</string>
+    <string name="btn_pedido_especial">Pedido especial</string>
+    <string name="btnCerrarSesion">Cerrar sesión</string>
+
+    <!-- LOCALES -->
+    <string name="tv_local_1">Cafetín Central</string>
+    <string name="tv_local_2">Cafetín Ingeniería</string>
+
+    <string name="tv_menu">Ver menú</string>
+
+    <string name="btnLocalCentral">Cafetín Central</string>
+    <string name="btnLocalIngenieria">Cafetín Ingeniería</string>
     <string-array name="Listlocales">
         <item>Local Central</item>
         <item>Local Ingeniería</item>
