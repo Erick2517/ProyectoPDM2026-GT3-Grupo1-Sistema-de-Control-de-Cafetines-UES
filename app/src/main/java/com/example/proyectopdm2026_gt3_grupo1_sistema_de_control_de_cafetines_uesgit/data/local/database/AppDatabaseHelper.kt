@@ -21,6 +21,7 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
         db.execSQL(CREATE_PAGOS_TABLE)
         db.execSQL(CREATE_PEDIDOS_ESPECIALES_TABLE)
         insertarRolesBase(db)
+        insertarUbicacionesBase(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -47,6 +48,18 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
             INSERT INTO ${DatabaseContract.Roles.TABLE_NAME}
             (${DatabaseContract.Roles.NOMBRE_ROL})
             VALUES ('Usuario'), ('Administrador'), ('Encargado')
+            """.trimIndent()
+        )
+    }
+
+    private fun insertarUbicacionesBase(db: SQLiteDatabase) {
+        db.execSQL(
+            """
+            INSERT INTO ${DatabaseContract.Ubicaciones.TABLE_NAME}
+            (${DatabaseContract.Ubicaciones.NOMBRE_UBICACION}, ${DatabaseContract.Ubicaciones.DESCRIPCION})
+            VALUES
+            ('Campus Central', 'Ubicación general dentro del campus universitario.'),
+            ('Facultad de Ingeniería', 'Zona de Ingeniería dentro del campus universitario.')
             """.trimIndent()
         )
     }

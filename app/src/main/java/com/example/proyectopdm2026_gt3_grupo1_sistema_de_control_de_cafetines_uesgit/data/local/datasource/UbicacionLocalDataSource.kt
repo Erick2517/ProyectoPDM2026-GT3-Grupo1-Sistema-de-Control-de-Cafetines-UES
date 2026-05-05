@@ -41,6 +41,23 @@ class UbicacionLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
         return ubicaciones
     }
 
+    fun obtenerUbicacionPorNombre(nombreUbicacion: String): Ubicacion? {
+        val cursor = databaseHelper.readableDatabase.query(
+            DatabaseContract.Ubicaciones.TABLE_NAME,
+            null,
+            "${DatabaseContract.Ubicaciones.NOMBRE_UBICACION} = ?",
+            arrayOf(nombreUbicacion),
+            null,
+            null,
+            null,
+            "1"
+        )
+
+        cursor.use {
+            return if (it.moveToFirst()) it.toUbicacion() else null
+        }
+    }
+
     private fun Cursor.toUbicacion(): Ubicacion {
         return Ubicacion(
             idUbicacion = getInt(getColumnIndexOrThrow(DatabaseContract.Ubicaciones.ID_UBICACION)),

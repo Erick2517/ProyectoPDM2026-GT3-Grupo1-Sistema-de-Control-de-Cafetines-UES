@@ -2,38 +2,49 @@ package com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_u
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import android.widget.Button
+import android.widget.EditText
+import android.widget.Spinner
 import android.widget.TextView
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.database.AppDatabaseHelper
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.datasource.RolLocalDataSource
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.datasource.UbicacionLocalDataSource
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.datasource.UsuarioLocalDataSource
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.repository.UbicacionRepository
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.repository.UsuarioRepository
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Ubicacion
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Usuario
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.validation.AuthValidator
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
 
 class RegistroActivity : AppCompatActivity() {
+    private lateinit var usuarioRepository: UsuarioRepository
+    private lateinit var ubicacionRepository: UbicacionRepository
+    private var ubicaciones: List<Ubicacion> = emptyList()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_registro)
 
-        val lblLogin = findViewById<TextView>(R.id.lbl_login);
-        val btnRegistrar = findViewById<Button>(R.id.btnRegistrar);
+        configurarRepositorios()
+        cargarUbicaciones()
+
+        val lblLogin = findViewById<TextView>(R.id.lbl_login)
+        val btnRegistrar = findViewById<Button>(R.id.btnRegistrar)
 
         lblLogin.setOnClickListener {
-            val intent = Intent(
-                this,
-                LoginActivity::class.java
-            )
-            startActivity(intent)
-            finish()
+            navegarALogin()
         }
 
         btnRegistrar.setOnClickListener {
-            val intent = Intent(
-                this,
-                BienvenidaActivity::class.java
-            )
-            startActivity(intent);
-            finish();
+            registrarUsuario()
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -41,5 +52,105 @@ class RegistroActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+    }
+
+    private fun configurarRepositorios() {
+        val databaseHelper = AppDatabaseHelper(this)
+        val rolLocalDataSource = RolLocalDataSource(databaseHelper)
+        val usuarioLocalDataSource = UsuarioLocalDataSource(databaseHelper)
+        val ubicacionLocalDataSource = UbicacionLocalDataSource(databaseHelper)
+
+        usuarioRepository = UsuarioRepository(usuarioLocalDataSource, rolLocalDataSource)
+        ubicacionRepository = UbicacionRepository(ubicacionLocalDataSource)
+    }
+
+    private fun cargarUbicaciones() {
+        when (val resultado = ubicacionRepository.obtenerUbicaciones()) {
+            is OperationResult.Success -> {
+                ubicaciones = resultado.data
+                val nombresUbicaciones = ubicaciones.map { it.nombreUbicacion }
+                val adapter = ArrayAdapter(
+                    this,
+                    android.R.layout.simple_spinner_item,
+                    nombresUbicaciones
+                )
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                findViewById<Spinner>(R.id.spUbicacion).adapter = adapter
+            }
+
+            is OperationResult.Error -> {
+                mostrarMensaje(resultado.message)
+            }
+        }
+    }
+
+    private fun registrarUsuario() {
+        if (ubicaciones.isEmpty()) {
+            mostrarMensaje("No hay ubicaciones disponibles para registrar el usuario.")
+            return
+        }
+
+        val nombre = findViewById<EditText>(R.id.etNombre).text.toString().trim()
+        val email = findViewById<EditText>(R.id.etCorreo).text.toString().trim()
+        val carnet = findViewById<EditText>(R.id.etCarnet).text.toString().trim().uppercase()
+        val password = findViewById<EditText>(R.id.etPassword).text.toString()
+        val confirmarPassword = findViewById<EditText>(R.id.etConfirmPassword).text.toString()
+        val ubicacionSeleccionada = obtenerUbicacionSeleccionada()
+
+        when (val resultadoRol = usuarioRepository.obtenerIdRolUsuario()) {
+            is OperationResult.Error -> mostrarMensaje(resultadoRol.message)
+            is OperationResult.Success -> {
+                val idRolUsuario = resultadoRol.data
+                val errorValidacion = AuthValidator.validarRegistro(
+                    nombre = nombre,
+                    email = email,
+                    password = password,
+                    confirmarPassword = confirmarPassword,
+                    carnet = carnet,
+                    idRol = idRolUsuario,
+                    idUbicacion = ubicacionSeleccionada?.idUbicacion
+                )
+
+                if (errorValidacion != null) {
+                    mostrarMensaje(errorValidacion)
+                    return
+                }
+
+                val usuario = Usuario(
+                    nombre = nombre,
+                    email = email,
+                    password = password,
+                    carnet = carnet,
+                    idRol = idRolUsuario,
+                    idUbicacion = ubicacionSeleccionada?.idUbicacion
+                )
+
+                guardarUsuario(usuario)
+            }
+        }
+    }
+
+    private fun obtenerUbicacionSeleccionada(): Ubicacion? {
+        val spinner = findViewById<Spinner>(R.id.spUbicacion)
+        return ubicaciones.getOrNull(spinner.selectedItemPosition)
+    }
+
+    private fun guardarUsuario(usuario: Usuario) {
+        when (val resultado = usuarioRepository.registrarUsuario(usuario)) {
+            is OperationResult.Error -> mostrarMensaje(resultado.message)
+            is OperationResult.Success -> {
+                mostrarMensaje("Usuario registrado correctamente.")
+                navegarALogin()
+            }
+        }
+    }
+
+    private fun navegarALogin() {
+        startActivity(Intent(this, LoginActivity::class.java))
+        finish()
+    }
+
+    private fun mostrarMensaje(mensaje: String) {
+        Toast.makeText(this, mensaje, Toast.LENGTH_LONG).show()
     }
 }

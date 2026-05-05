@@ -46,6 +46,24 @@ class RolLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
         }
     }
 
+    fun obtenerRolPorId(idRol: Int): Rol? {
+        val db = databaseHelper.readableDatabase
+        val cursor = db.query(
+            DatabaseContract.Roles.TABLE_NAME,
+            null,
+            "${DatabaseContract.Roles.ID_ROL} = ?",
+            arrayOf(idRol.toString()),
+            null,
+            null,
+            null,
+            "1"
+        )
+
+        cursor.use {
+            return if (it.moveToFirst()) it.toRol() else null
+        }
+    }
+
     private fun Cursor.toRol(): Rol {
         return Rol(
             idRol = getInt(getColumnIndexOrThrow(DatabaseContract.Roles.ID_ROL)),

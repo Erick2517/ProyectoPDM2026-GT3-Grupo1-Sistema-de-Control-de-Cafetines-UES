@@ -5,6 +5,7 @@ import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_ue
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Usuario
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.AppConstants
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.PasswordHasher
 
 class UsuarioRepository(
     private val usuarioLocalDataSource: UsuarioLocalDataSource,
@@ -16,7 +17,8 @@ class UsuarioRepository(
                 return OperationResult.Error("Ya existe un usuario con ese correo o carnet.")
             }
 
-            val idUsuario = usuarioLocalDataSource.insertarUsuario(usuario)
+            val usuarioConPasswordProtegida = usuario.copy(password = PasswordHasher.hash(usuario.password))
+            val idUsuario = usuarioLocalDataSource.insertarUsuario(usuarioConPasswordProtegida)
             if (idUsuario == -1L) {
                 OperationResult.Error("No se pudo registrar el usuario.")
             } else {
@@ -29,7 +31,10 @@ class UsuarioRepository(
 
     fun iniciarSesion(email: String, password: String): OperationResult<Usuario> {
         return try {
-            val usuario = usuarioLocalDataSource.obtenerUsuarioPorCredenciales(email, password)
+            val usuario = usuarioLocalDataSource.obtenerUsuarioPorCredenciales(
+                email,
+                PasswordHasher.hash(password)
+            )
             if (usuario == null) {
                 OperationResult.Error("Correo o contraseña incorrectos.")
             } else {
@@ -50,6 +55,19 @@ class UsuarioRepository(
             }
         } catch (exception: Exception) {
             OperationResult.Error("Ocurrió un error al consultar el rol Usuario.", exception)
+        }
+    }
+
+    fun obtenerNombreRol(idRol: Int): OperationResult<String> {
+        return try {
+            val rol = rolLocalDataSource.obtenerRolPorId(idRol)
+            if (rol == null) {
+                OperationResult.Error("No se encontró el rol del usuario.")
+            } else {
+                OperationResult.Success(rol.nombreRol)
+            }
+        } catch (exception: Exception) {
+            OperationResult.Error("Ocurrió un error al consultar el rol del usuario.", exception)
         }
     }
 }
