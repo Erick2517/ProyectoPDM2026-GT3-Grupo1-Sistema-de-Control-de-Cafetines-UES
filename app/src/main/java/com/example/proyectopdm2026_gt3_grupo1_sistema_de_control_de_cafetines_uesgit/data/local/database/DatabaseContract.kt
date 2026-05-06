@@ -2,7 +2,7 @@ package com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_u
 
 object DatabaseContract {
     const val DATABASE_NAME = "control_cafetines.db"
-    const val DATABASE_VERSION = 2
+    const val DATABASE_VERSION = 3
 
     object Roles {
         const val TABLE_NAME = "Roles"

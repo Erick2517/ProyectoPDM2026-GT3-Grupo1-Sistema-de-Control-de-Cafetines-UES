@@ -36,4 +36,7 @@ object AppConstants {
     const val MAX_ANTOJITOS_POR_PEDIDO = 3
     const val HORA_INICIO_ANTOJITOS = 14
     const val HORA_FIN_ANTOJITOS = 16
+
+    const val EXTRA_ID_LOCAL = "extra_id_local"
+    const val EXTRA_NOMBRE_LOCAL = "extra_nombre_local"
 }

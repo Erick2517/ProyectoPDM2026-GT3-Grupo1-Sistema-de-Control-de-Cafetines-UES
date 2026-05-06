@@ -1,6 +1,7 @@
 package com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.database
 
 import android.content.Context
+import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 
@@ -22,19 +23,17 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
         db.execSQL(CREATE_PEDIDOS_ESPECIALES_TABLE)
         insertarRolesBase(db)
         insertarUbicacionesBase(db)
+        insertarCatalogoBase(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS ${DatabaseContract.PedidosEspeciales.TABLE_NAME}")
-        db.execSQL("DROP TABLE IF EXISTS ${DatabaseContract.Pagos.TABLE_NAME}")
-        db.execSQL("DROP TABLE IF EXISTS ${DatabaseContract.DetallePedido.TABLE_NAME}")
-        db.execSQL("DROP TABLE IF EXISTS ${DatabaseContract.Pedidos.TABLE_NAME}")
-        db.execSQL("DROP TABLE IF EXISTS ${DatabaseContract.Productos.TABLE_NAME}")
-        db.execSQL("DROP TABLE IF EXISTS ${DatabaseContract.Locales.TABLE_NAME}")
-        db.execSQL("DROP TABLE IF EXISTS ${DatabaseContract.Usuarios.TABLE_NAME}")
-        db.execSQL("DROP TABLE IF EXISTS ${DatabaseContract.Ubicaciones.TABLE_NAME}")
-        db.execSQL("DROP TABLE IF EXISTS ${DatabaseContract.Roles.TABLE_NAME}")
-        onCreate(db)
+        if (oldVersion < 2) {
+            insertarUbicacionesBase(db)
+        }
+
+        if (oldVersion < 3) {
+            insertarCatalogoBase(db)
+        }
     }
 
     override fun onConfigure(db: SQLiteDatabase) {
@@ -45,7 +44,7 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
     private fun insertarRolesBase(db: SQLiteDatabase) {
         db.execSQL(
             """
-            INSERT INTO ${DatabaseContract.Roles.TABLE_NAME}
+            INSERT OR IGNORE INTO ${DatabaseContract.Roles.TABLE_NAME}
             (${DatabaseContract.Roles.NOMBRE_ROL})
             VALUES ('Usuario'), ('Administrador'), ('Encargado')
             """.trimIndent()
@@ -55,13 +54,127 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
     private fun insertarUbicacionesBase(db: SQLiteDatabase) {
         db.execSQL(
             """
-            INSERT INTO ${DatabaseContract.Ubicaciones.TABLE_NAME}
+            INSERT OR IGNORE INTO ${DatabaseContract.Ubicaciones.TABLE_NAME}
             (${DatabaseContract.Ubicaciones.NOMBRE_UBICACION}, ${DatabaseContract.Ubicaciones.DESCRIPCION})
             VALUES
             ('Campus Central', 'Ubicación general dentro del campus universitario.'),
             ('Facultad de Ingeniería', 'Zona de Ingeniería dentro del campus universitario.')
             """.trimIndent()
         )
+    }
+
+    private fun insertarCatalogoBase(db: SQLiteDatabase) {
+        if (contarRegistros(db, DatabaseContract.Locales.TABLE_NAME) == 0) {
+            insertarLocalBase(
+                db,
+                nombre = "Cafetín Central",
+                ubicacion = "Plaza central",
+                descripcion = "Local principal con desayunos, almuerzos y bebidas.",
+                estado = "Activo"
+            )
+            insertarLocalBase(
+                db,
+                nombre = "Cafetín Ingeniería",
+                ubicacion = "Facultad de Ingeniería",
+                descripcion = "Local cercano a edificios de aulas y laboratorios.",
+                estado = "Activo"
+            )
+            insertarLocalBase(
+                db,
+                nombre = "Cafetín Biblioteca",
+                ubicacion = "Biblioteca central",
+                descripcion = "Punto de venta de refrigerios y bebidas.",
+                estado = "Activo"
+            )
+        }
+
+        if (contarRegistros(db, DatabaseContract.Productos.TABLE_NAME) == 0) {
+            insertarProductosBase(db)
+        }
+    }
+
+    private fun insertarProductosBase(db: SQLiteDatabase) {
+        val idCentral = obtenerIdLocalPorNombre(db, "Cafetín Central")
+        val idIngenieria = obtenerIdLocalPorNombre(db, "Cafetín Ingeniería")
+        val idBiblioteca = obtenerIdLocalPorNombre(db, "Cafetín Biblioteca")
+
+        if (idCentral != null) {
+            insertarProductoBase(db, "Desayuno típico", 2.50, "Disponible", "Desayuno", 20, idCentral)
+            insertarProductoBase(db, "Café americano", 0.75, "Disponible", "Bebida", 35, idCentral)
+            insertarProductoBase(db, "Empanadas de leche", 1.00, "Disponible", "Antojito", 12, idCentral)
+        }
+
+        if (idIngenieria != null) {
+            insertarProductoBase(db, "Sándwich de pollo", 2.25, "Disponible", "Almuerzo", 18, idIngenieria)
+            insertarProductoBase(db, "Jugo natural", 1.00, "Disponible", "Bebida", 25, idIngenieria)
+            insertarProductoBase(db, "Nuegados", 1.25, "Disponible", "Antojito", 10, idIngenieria)
+        }
+
+        if (idBiblioteca != null) {
+            insertarProductoBase(db, "Pan dulce", 0.60, "Disponible", "Refrigerio", 30, idBiblioteca)
+            insertarProductoBase(db, "Chocolate caliente", 0.90, "Disponible", "Bebida", 20, idBiblioteca)
+            insertarProductoBase(db, "Tamal de elote", 1.50, "No disponible", "Antojito", 0, idBiblioteca)
+        }
+    }
+
+    private fun insertarLocalBase(
+        db: SQLiteDatabase,
+        nombre: String,
+        ubicacion: String,
+        descripcion: String,
+        estado: String
+    ) {
+        val values = ContentValues().apply {
+            put(DatabaseContract.Locales.NOMBRE_LOCAL, nombre)
+            put(DatabaseContract.Locales.UBICACION, ubicacion)
+            put(DatabaseContract.Locales.DESCRIPCION, descripcion)
+            put(DatabaseContract.Locales.ESTADO, estado)
+        }
+        db.insert(DatabaseContract.Locales.TABLE_NAME, null, values)
+    }
+
+    private fun insertarProductoBase(
+        db: SQLiteDatabase,
+        nombre: String,
+        precio: Double,
+        disponibilidad: String,
+        tipo: String,
+        stock: Int,
+        idLocal: Int
+    ) {
+        val values = ContentValues().apply {
+            put(DatabaseContract.Productos.NOMBRE_PRODUCTO, nombre)
+            put(DatabaseContract.Productos.PRECIO, precio)
+            put(DatabaseContract.Productos.DISPONIBILIDAD, disponibilidad)
+            put(DatabaseContract.Productos.TIPO, tipo)
+            put(DatabaseContract.Productos.STOCK, stock)
+            put(DatabaseContract.Productos.ID_LOCAL, idLocal)
+        }
+        db.insert(DatabaseContract.Productos.TABLE_NAME, null, values)
+    }
+
+    private fun contarRegistros(db: SQLiteDatabase, tableName: String): Int {
+        val cursor = db.rawQuery("SELECT COUNT(*) FROM $tableName", null)
+        cursor.use {
+            return if (it.moveToFirst()) it.getInt(0) else 0
+        }
+    }
+
+    private fun obtenerIdLocalPorNombre(db: SQLiteDatabase, nombreLocal: String): Int? {
+        val cursor = db.query(
+            DatabaseContract.Locales.TABLE_NAME,
+            arrayOf(DatabaseContract.Locales.ID_LOCAL),
+            "${DatabaseContract.Locales.NOMBRE_LOCAL} = ?",
+            arrayOf(nombreLocal),
+            null,
+            null,
+            null,
+            "1"
+        )
+
+        cursor.use {
+            return if (it.moveToFirst()) it.getInt(0) else null
+        }
     }
 
     private companion object {
