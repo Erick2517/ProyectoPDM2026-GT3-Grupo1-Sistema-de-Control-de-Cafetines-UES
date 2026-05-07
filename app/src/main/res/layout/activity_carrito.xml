@@ -75,6 +75,38 @@
                 android:textSize="14sp"
                 android:layout_marginBottom="16dp"/>
 
+            <TextView
+                android:id="@+id/tvTipoPedido"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tipo de pedido"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
+
+            <RadioGroup
+                android:id="@+id/rgTipoPedido"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="16dp">
+
+                <RadioButton
+                    android:id="@+id/rbReserva"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Reserva"/>
+
+                <RadioButton
+                    android:id="@+id/rbEntrega"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Entrega"/>
+
+            </RadioGroup>
+
             <LinearLayout
                 android:id="@+id/contenedorCarrito"
                 android:layout_width="match_parent"

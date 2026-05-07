@@ -5,11 +5,12 @@ import android.content.Context
 class SessionManager(context: Context) {
     private val preferences = context.getSharedPreferences(PREFERENCES_NAME, Context.MODE_PRIVATE)
 
-    fun guardarSesion(idUsuario: Int, idRol: Int, nombreRol: String) {
+    fun guardarSesion(idUsuario: Int, idRol: Int, nombreRol: String, idUbicacion: Int? = null) {
         preferences.edit()
             .putInt(KEY_ID_USUARIO, idUsuario)
             .putInt(KEY_ID_ROL, idRol)
             .putString(KEY_NOMBRE_ROL, nombreRol)
+            .putInt(KEY_ID_UBICACION, idUbicacion ?: 0)
             .putBoolean(KEY_SESION_ACTIVA, true)
             .apply()
     }
@@ -34,11 +35,17 @@ class SessionManager(context: Context) {
         return preferences.getString(KEY_NOMBRE_ROL, null)
     }
 
+    fun obtenerIdUbicacion(): Int? {
+        val idUbicacion = preferences.getInt(KEY_ID_UBICACION, 0)
+        return if (idUbicacion > 0) idUbicacion else null
+    }
+
     private companion object {
         const val PREFERENCES_NAME = "cafetines_session"
         const val KEY_ID_USUARIO = "id_usuario"
         const val KEY_ID_ROL = "id_rol"
         const val KEY_NOMBRE_ROL = "nombre_rol"
+        const val KEY_ID_UBICACION = "id_ubicacion"
         const val KEY_SESION_ACTIVA = "sesion_activa"
     }
 }

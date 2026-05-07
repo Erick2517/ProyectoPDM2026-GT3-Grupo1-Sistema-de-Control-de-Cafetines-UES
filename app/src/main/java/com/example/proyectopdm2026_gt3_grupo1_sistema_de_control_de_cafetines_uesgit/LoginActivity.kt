@@ -91,7 +91,12 @@ class LoginActivity : AppCompatActivity() {
             is OperationResult.Error -> mostrarMensaje(resultadoRol.message)
             is OperationResult.Success -> {
                 val nombreRol = resultadoRol.data
-                sessionManager.guardarSesion(usuario.idUsuario, usuario.idRol, nombreRol)
+                sessionManager.guardarSesion(
+                    idUsuario = usuario.idUsuario,
+                    idRol = usuario.idRol,
+                    nombreRol = nombreRol,
+                    idUbicacion = usuario.idUbicacion
+                )
                 navegarSegunRol(nombreRol)
             }
         }

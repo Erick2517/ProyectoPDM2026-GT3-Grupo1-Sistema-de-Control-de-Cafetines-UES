@@ -39,4 +39,5 @@ object AppConstants {
 
     const val EXTRA_ID_LOCAL = "extra_id_local"
     const val EXTRA_NOMBRE_LOCAL = "extra_nombre_local"
+    const val EXTRA_ID_PEDIDO = "extra_id_pedido"
 }

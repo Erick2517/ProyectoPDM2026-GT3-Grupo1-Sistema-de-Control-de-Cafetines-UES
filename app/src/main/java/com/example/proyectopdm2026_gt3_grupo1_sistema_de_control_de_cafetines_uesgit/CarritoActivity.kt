@@ -1,11 +1,13 @@
 package com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit
 
+import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -13,17 +15,31 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.database.AppDatabaseHelper
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.datasource.PedidoLocalDataSource
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.repository.PedidoRepository
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.CarritoItem
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.DetallePedido
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Pedido
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.validation.AntojitosValidator
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.validation.PedidoValidator
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.AppConstants
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.CarritoManager
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.DateUtils
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.SessionManager
 import java.util.Locale
 
 class CarritoActivity : AppCompatActivity() {
+    private lateinit var pedidoRepository: PedidoRepository
+    private lateinit var sessionManager: SessionManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_carrito)
 
+        configurarDependencias()
         mostrarCarrito()
 
         val btnBack = findViewById<ImageView>(R.id.btnBack)
@@ -41,6 +57,12 @@ class CarritoActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+    }
+
+    private fun configurarDependencias() {
+        val databaseHelper = AppDatabaseHelper(this)
+        pedidoRepository = PedidoRepository(PedidoLocalDataSource(databaseHelper))
+        sessionManager = SessionManager(this)
     }
 
     private fun mostrarCarrito() {
@@ -234,7 +256,108 @@ class CarritoActivity : AppCompatActivity() {
             return
         }
 
-        mostrarMensaje("El registro del pedido en SQLite se implementará en la siguiente parte de RF03.")
+        if (!sessionManager.haySesionActiva()) {
+            mostrarMensaje("Debe iniciar sesión para registrar un pedido.")
+            return
+        }
+
+        val items = CarritoManager.obtenerItems()
+        val errorAntojitos = validarRestriccionAntojitos(items)
+        if (errorAntojitos != null) {
+            mostrarMensaje(errorAntojitos)
+            return
+        }
+
+        val tipoPedido = obtenerTipoPedidoSeleccionado()
+        if (tipoPedido == null) {
+            mostrarMensaje("Debe seleccionar si el pedido es reserva o entrega.")
+            return
+        }
+
+        val idUbicacionPedido = obtenerIdUbicacionPedido(tipoPedido)
+        if (tipoPedido == AppConstants.TIPO_PEDIDO_ENTREGA && idUbicacionPedido == null) {
+            mostrarMensaje("Debe tener una ubicación registrada para solicitar entrega.")
+            return
+        }
+
+        val detalles = crearDetallesPedido(items)
+        val pedido = crearPedido(detalles, tipoPedido, idUbicacionPedido)
+        val errorPedido = PedidoValidator.validarPedido(pedido, detalles)
+        if (errorPedido != null) {
+            mostrarMensaje(errorPedido)
+            return
+        }
+
+        when (val resultado = pedidoRepository.crearPedido(pedido, detalles)) {
+            is OperationResult.Error -> mostrarMensaje(resultado.message)
+            is OperationResult.Success -> {
+                CarritoManager.vaciarCarrito()
+                mostrarMensaje("Pedido registrado correctamente.")
+                abrirPantallaPago(resultado.data)
+            }
+        }
+    }
+
+    private fun validarRestriccionAntojitos(items: List<CarritoItem>): String? {
+        val cantidadAntojitos = items
+            .filter { item ->
+                item.producto.tipo.equals(AppConstants.TIPO_PRODUCTO_ANTOJITO, ignoreCase = true)
+            }
+            .sumOf { item -> item.cantidad }
+
+        return AntojitosValidator.validarAntojitos(cantidadAntojitos)
+    }
+
+    private fun obtenerTipoPedidoSeleccionado(): String? {
+        val rgTipoPedido = findViewById<RadioGroup>(R.id.rgTipoPedido)
+        return when (rgTipoPedido.checkedRadioButtonId) {
+            R.id.rbReserva -> AppConstants.TIPO_PEDIDO_RESERVA
+            R.id.rbEntrega -> AppConstants.TIPO_PEDIDO_ENTREGA
+            else -> null
+        }
+    }
+
+    private fun obtenerIdUbicacionPedido(tipoPedido: String): Int? {
+        return if (tipoPedido == AppConstants.TIPO_PEDIDO_ENTREGA) {
+            sessionManager.obtenerIdUbicacion()
+        } else {
+            null
+        }
+    }
+
+    private fun crearDetallesPedido(items: List<CarritoItem>): List<DetallePedido> {
+        return items.map { item ->
+            DetallePedido(
+                idPedido = 0,
+                idProducto = item.producto.idProducto,
+                cantidad = item.cantidad,
+                precioUnitario = item.producto.precio,
+                subtotal = item.subtotal
+            )
+        }
+    }
+
+    private fun crearPedido(
+        detalles: List<DetallePedido>,
+        tipoPedido: String,
+        idUbicacionPedido: Int?
+    ): Pedido {
+        return Pedido(
+            fechaPedido = DateUtils.obtenerFechaHoraActual(),
+            tipoPedido = tipoPedido,
+            estadoPedido = AppConstants.ESTADO_PEDIDO_PENDIENTE_PAGO,
+            total = PedidoValidator.calcularTotal(detalles),
+            idUsuario = sessionManager.obtenerIdUsuario(),
+            idUbicacion = idUbicacionPedido
+        )
+    }
+
+    private fun abrirPantallaPago(idPedido: Long) {
+        val intent = Intent(this, PagoActivity::class.java).apply {
+            putExtra(AppConstants.EXTRA_ID_PEDIDO, idPedido)
+        }
+        startActivity(intent)
+        finish()
     }
 
     private fun formatearPrecio(precio: Double): String {
