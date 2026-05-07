@@ -44,6 +44,7 @@
 
             <!-- Botones principales -->
 
+            <!-- Botón: Ver locales -->
             <Button
                 android:id="@+id/btnVerLocales"
                 android:layout_width="match_parent"
@@ -51,8 +52,12 @@
                 android:text="Ver locales"
                 android:layout_marginBottom="12dp"
                 android:padding="14dp"
-                android:backgroundTint="@color/wine"/>
+                android:backgroundTint="@color/wine"
+                app:icon="@drawable/ic_store"
+                app:iconGravity="textStart"
+                app:iconPadding="10dp"/>
 
+            <!-- Botón: Mis pedidos -->
             <Button
                 android:id="@+id/btnMisPedidos"
                 android:layout_width="match_parent"
@@ -60,8 +65,14 @@
                 android:text="Mis pedidos"
                 android:layout_marginBottom="12dp"
                 android:padding="14dp"
-                android:backgroundTint="@color/background"/>
+                android:backgroundTint="@color/background"
+                android:textColor="@color/white"
+                app:icon="@drawable/ic_shopping_bag"
+                app:iconTint="@color/white"
+                app:iconGravity="textStart"
+                app:iconPadding="10dp"/>
 
+            <!-- Botón: Pedido especial -->
             <Button
                 android:id="@+id/btnPedidoEspecial"
                 android:layout_width="match_parent"
@@ -69,8 +80,14 @@
                 android:text="Pedido especial"
                 android:layout_marginBottom="12dp"
                 android:padding="14dp"
-                android:backgroundTint="@color/background"/>
+                android:backgroundTint="@color/background"
+                android:textColor="@color/white"
+                app:icon="@drawable/ic_star"
+                app:iconTint="@color/white"
+                app:iconGravity="textStart"
+                app:iconPadding="10dp"/>
 
+            <!-- Botón: Cerrar sesión -->
             <Button
                 android:id="@+id/btnCerrarSesion"
                 android:layout_width="match_parent"
@@ -78,8 +95,12 @@
                 android:text="Cerrar sesión"
                 android:layout_marginBottom="24dp"
                 android:padding="14dp"
-                android:backgroundTint="@color/background"/>
-
+                android:backgroundTint="@color/background"
+                android:textColor="@color/white"
+                app:icon="@drawable/ic_logout"
+                app:iconTint="@color/white"
+                app:iconGravity="textStart"
+                app:iconPadding="10dp"/>
             <!-- Locales destacados -->
             <TextView
                 android:id="@+id/tv_destacados"

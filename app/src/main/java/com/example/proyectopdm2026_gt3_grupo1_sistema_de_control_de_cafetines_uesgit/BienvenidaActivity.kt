@@ -18,18 +18,18 @@ class BienvenidaActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_bienvenida)
 
-        // =========================
         // SESIÓN
-        // =========================
+
+
+        // Recuperamos los datos que guardamos en el Login para saber quién entró
         val prefs = getSharedPreferences("sesion", MODE_PRIVATE)
 
         val nombre = prefs.getString("nombre", "Usuario")
         val idUsuario = prefs.getInt("idUsuario", 0)
         val idRol = prefs.getInt("idRol", 0)
 
-        // =========================
         // VISTAS
-        // =========================
+
         val tvSaludo = findViewById<TextView>(R.id.tv_saludo)
 
         val btnLogOut = findViewById<Button>(R.id.btnCerrarSesion)
@@ -43,34 +43,35 @@ class BienvenidaActivity : AppCompatActivity() {
         val local1 = findViewById<LinearLayout>(R.id.local1)
         val local2 = findViewById<LinearLayout>(R.id.local2)
 
-        // =========================
+
         // SALUDO
-        // =========================
+
         val db = DatabaseHelper(this)
         val usuario = db.obtenerUsuarioPorId(idUsuario)
 
         if (usuario != null) {
-            tvSaludo.text = "Hola, ${usuario.nombre}"
+            tvSaludo.text = "Hola, ${usuario.nombre}" // Usamos el nombre de la BD
         } else {
-            tvSaludo.text = "Hola, $nombre"
+            tvSaludo.text = "Hola, $nombre"  // Usamos el nombre guardado en preferencias si no hay BD
+
         }
 
-        // =========================
-        // LOGOUT
-        // =========================
+        // CERRAR SESION
+
         btnLogOut.setOnClickListener {
 
+            //  Borramos los datos de SharedPreferences para que la sesión expire
             val prefs = getSharedPreferences("sesion", MODE_PRIVATE)
             prefs.edit().clear().apply()
+            //  Redirigimos al Login
 
             val intent = Intent(this, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             startActivity(intent)
         }
 
-        // =========================
         // NAVEGACIÓN
-        // =========================
+
         btnVerLocales.setOnClickListener {
             startActivity(Intent(this, LocalesActivity::class.java))
         }
@@ -99,9 +100,9 @@ class BienvenidaActivity : AppCompatActivity() {
             startActivity(Intent(this, ProductosActivity::class.java))
         }
 
-        // =========================
+
         // AJUSTE DE PANTALLA
-        // =========================
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)

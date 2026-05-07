@@ -31,7 +31,6 @@ class ProductosActivity : AppCompatActivity() {
             )
             startActivity(intent)
         }
-
         imgCarrito.setOnClickListener {
             val intent = Intent(
                 this,
@@ -39,7 +38,6 @@ class ProductosActivity : AppCompatActivity() {
             )
             startActivity(intent)
         }
-
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())

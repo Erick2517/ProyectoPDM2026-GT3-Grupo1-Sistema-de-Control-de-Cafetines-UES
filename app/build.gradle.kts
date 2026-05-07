@@ -13,7 +13,7 @@ android {
     defaultConfig {
         applicationId =
             "com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit"
-        minSdk = 30
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -37,6 +37,8 @@ android {
 }
 
 dependencies {
+    implementation("com.github.bumptech.glide:glide:4.16.0")
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -45,6 +47,8 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    implementation("com.android.volley:volley:1.2.1")
+    implementation("org.mindrot:jbcrypt:0.4")
 
     //agregado
     implementation(libs.cardview)

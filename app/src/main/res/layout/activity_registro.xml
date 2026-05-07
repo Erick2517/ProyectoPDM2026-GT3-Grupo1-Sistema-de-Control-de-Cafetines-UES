@@ -87,6 +87,7 @@
                 android:layout_marginBottom="16dp"
                 android:padding="12dp" />
 
+            <!-- CAMPO: CONTRASEÑA -->
             <TextView
                 android:id="@+id/lblPassword"
                 android:layout_width="match_parent"
@@ -94,15 +95,23 @@
                 android:text="@string/lbl_pass"
                 android:layout_marginBottom="5dp" />
 
-            <EditText
-                android:id="@+id/txtPassword"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_password"
-                android:inputType="textPassword"
                 android:layout_marginBottom="16dp"
-                android:padding="12dp" />
+                app:passwordToggleEnabled="true">
 
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txtPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_password"
+                    android:inputType="textPassword"
+                    android:padding="12dp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <!-- CAMPO: CONFIRMAR CONTRASEÑA -->
             <TextView
                 android:id="@+id/lblConfirmarPassword"
                 android:layout_width="match_parent"
@@ -110,15 +119,20 @@
                 android:text="@string/lbl_confirmar_password"
                 android:layout_marginBottom="5dp" />
 
-            <EditText
-                android:id="@+id/txtConfirmPassword"
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/hint_confirmar_password"
-                android:inputType="textPassword"
                 android:layout_marginBottom="16dp"
-                android:padding="12dp" />
+                app:passwordToggleEnabled="true">
 
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/txtConfirmPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/hint_confirmar_password"
+                    android:inputType="textPassword"
+                    android:padding="12dp" />
+            </com.google.android.material.textfield.TextInputLayout>
             <TextView
                 android:id="@+id/lblUbicacion"
                 android:layout_width="match_parent"

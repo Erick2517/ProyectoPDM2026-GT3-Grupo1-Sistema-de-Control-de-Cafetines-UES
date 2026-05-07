@@ -22,12 +22,14 @@ class LocalesActivity : AppCompatActivity() {
             finish()
         }
 
+        // Configuración para la tarjeta del local:
+        // Al tocar el cafetín, nos lleva a la pantalla de "ProductosActivity"
         cardLocal.setOnClickListener {
             val intent = Intent(
                 this,
                 ProductosActivity::class.java
             )
-            startActivity(intent)
+            startActivity(intent)// Ejecuta el salto a la otra pantalla
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->

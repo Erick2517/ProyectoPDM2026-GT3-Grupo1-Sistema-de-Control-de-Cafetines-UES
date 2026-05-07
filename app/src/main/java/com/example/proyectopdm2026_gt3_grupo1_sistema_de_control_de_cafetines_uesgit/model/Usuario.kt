@@ -4,7 +4,7 @@ data class Usuario(
     val idUsuario: Int = 0,
     val nombre: String,
     val email: String,
-    val password: String,
-    val carnet: String,
+    val password: String = "",
+    val carnet: String = "",
     val idRol: Int
 )

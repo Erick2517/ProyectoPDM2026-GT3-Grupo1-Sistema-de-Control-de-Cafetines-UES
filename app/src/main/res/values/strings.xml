@@ -25,6 +25,38 @@
 
 
 
+    <!-- Gestion usuarios -->
+    <string name="titulo_gestion_usuarios">Gestionar Usuarios</string>
+    <string name="descripcion_usuarios">Administra accesos y permisos del sistema</string>
+    <string name="buscar_usuario">Buscar Usuario...</string>
+
+    <!-- Usuario ejemplo -->
+    <string name="usuario_nombre">Usuario 1</string>
+    <string name="usuario_info">usuario@ues.edu.sv | CARNET</string>
+    <string name="usuario_rol">Rol: Admin</string>
+
+    <string name="title_gestionar_locales">Gestionar Locales</string>
+    <string name="lbl_indicacion_admin">Administrar los Cafetines registrados</string>
+    <string name="btn_agregar_cafetin">+ Agregar Cafetín</string>
+    <string name="lbl_ubicacion_prefix">Ubicación: </string>
+    <string name="lbl_estado_activo">Estado: Activo</string>
+    <string name="btn_editar">Editar</string>
+    <string name="btn_eliminar">Eliminar</string>
+    <string name="desc_volver">Volver</string>
+
+    <string name="title_nuevo_local">Nuevo local</string>
+    <string name="lbl_registro_cafetin">Registra un nuevo cafetín</string>
+    <string name="hint_nombre_local">Nombre del local</string>
+    <string name="hint_ubicacion">Ubicación</string>
+    <string name="hint_descripcion">Descripción</string>
+    <string name="lbl_subir_imagen">Subir imagen</string>
+    <string name="lbl_toca_subir_imagen">Toca para subir una imagen (opcional)</string>
+    <string name="lbl_entrega_campus">Ofrece entrega en campus</string>
+    <string name="lbl_estado">Estado</string>
+    <string name="btn_guardar_local">Guardar local</string>
+
+    <!-- Botones -->
+    <string name="editar">Editar</string>
 
     <!-- BIENVENIDA -->
     <string name="tv_saludo">Hola, Usuario</string>
