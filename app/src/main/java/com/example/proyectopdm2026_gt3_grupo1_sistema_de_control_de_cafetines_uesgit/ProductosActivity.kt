@@ -19,12 +19,14 @@ import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_ue
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.repository.ProductoRepository
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Producto
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.AppConstants
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.CarritoManager
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
 import java.util.Locale
 
 class ProductosActivity : AppCompatActivity() {
     private lateinit var productoRepository: ProductoRepository
     private var idLocal: Int = 0
+    private var nombreLocal: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,9 +77,10 @@ class ProductosActivity : AppCompatActivity() {
 
     private fun cargarDatosLocal() {
         idLocal = intent.getIntExtra(AppConstants.EXTRA_ID_LOCAL, 0)
-        val nombreLocal = intent.getStringExtra(AppConstants.EXTRA_NOMBRE_LOCAL)
+        nombreLocal = intent.getStringExtra(AppConstants.EXTRA_NOMBRE_LOCAL).orEmpty()
 
-        findViewById<TextView>(R.id.tvNombreLocal).text = nombreLocal ?: "Seleccione un local"
+        findViewById<TextView>(R.id.tvNombreLocal).text =
+            nombreLocal.ifBlank { "Seleccione un local" }
     }
 
     private fun cargarProductos() {
@@ -194,7 +197,16 @@ class ProductosActivity : AppCompatActivity() {
                 topMargin = dpToPx(8)
             }
             setOnClickListener {
-                mostrarMensaje("${producto.nombreProducto} se agregará al carrito en RF03.")
+                agregarAlCarrito(producto)
+            }
+        }
+    }
+
+    private fun agregarAlCarrito(producto: Producto) {
+        when (val resultado = CarritoManager.agregarProducto(producto, nombreLocal)) {
+            is OperationResult.Error -> mostrarMensaje(resultado.message)
+            is OperationResult.Success -> {
+                mostrarMensaje("${resultado.data.producto.nombreProducto} agregado al carrito.")
             }
         }
     }
