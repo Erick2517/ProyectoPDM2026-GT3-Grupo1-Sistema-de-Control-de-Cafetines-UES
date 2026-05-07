@@ -63,6 +63,23 @@ class PedidoLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
         return pedidos
     }
 
+    fun obtenerPedidoPorId(idPedido: Int): Pedido? {
+        val cursor = databaseHelper.readableDatabase.query(
+            DatabaseContract.Pedidos.TABLE_NAME,
+            null,
+            "${DatabaseContract.Pedidos.ID_PEDIDO} = ?",
+            arrayOf(idPedido.toString()),
+            null,
+            null,
+            null,
+            "1"
+        )
+
+        cursor.use {
+            return if (it.moveToFirst()) it.toPedido() else null
+        }
+    }
+
     fun obtenerDetallesPorPedido(idPedido: Int): List<DetallePedido> {
         val detalles = mutableListOf<DetallePedido>()
         val cursor = databaseHelper.readableDatabase.query(

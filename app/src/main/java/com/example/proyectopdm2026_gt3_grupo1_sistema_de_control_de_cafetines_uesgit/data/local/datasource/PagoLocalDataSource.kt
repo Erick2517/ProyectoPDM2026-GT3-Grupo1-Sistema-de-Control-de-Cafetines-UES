@@ -15,6 +15,42 @@ class PagoLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
         )
     }
 
+    fun registrarPagoYActualizarPedido(pago: Pago, nuevoEstadoPedido: String): Long {
+        val db = databaseHelper.writableDatabase
+        db.beginTransaction()
+
+        return try {
+            val idPago = db.insert(
+                DatabaseContract.Pagos.TABLE_NAME,
+                null,
+                pago.toContentValues()
+            )
+
+            if (idPago == -1L) {
+                return -1L
+            }
+
+            val pedidoValues = ContentValues().apply {
+                put(DatabaseContract.Pedidos.ESTADO_PEDIDO, nuevoEstadoPedido)
+            }
+            val filasActualizadas = db.update(
+                DatabaseContract.Pedidos.TABLE_NAME,
+                pedidoValues,
+                "${DatabaseContract.Pedidos.ID_PEDIDO} = ?",
+                arrayOf(pago.idPedido.toString())
+            )
+
+            if (filasActualizadas == 0) {
+                return -1L
+            }
+
+            db.setTransactionSuccessful()
+            idPago
+        } finally {
+            db.endTransaction()
+        }
+    }
+
     fun obtenerPagosPorPedido(idPedido: Int): List<Pago> {
         val pagos = mutableListOf<Pago>()
         val cursor = databaseHelper.readableDatabase.query(
