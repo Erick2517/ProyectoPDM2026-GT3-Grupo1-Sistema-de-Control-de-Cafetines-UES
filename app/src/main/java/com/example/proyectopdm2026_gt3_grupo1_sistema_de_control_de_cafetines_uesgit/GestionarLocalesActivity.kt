@@ -17,6 +17,7 @@ import com.android.volley.toolbox.Volley
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.model.Local
 import org.json.JSONArray
 import com.bumptech.glide.Glide
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.EditarLocalActivity
 class GestionarLocalesActivity : AppCompatActivity() {
 
     private lateinit var containerLocales: LinearLayout
@@ -67,7 +68,7 @@ class GestionarLocalesActivity : AppCompatActivity() {
                 for (i in 0 until jsonArray.length()) {
 
                     val obj = jsonArray.getJSONObject(i)
-
+                    val idLocal = obj.getString("id_local")
                     val nombre = obj.getString("nombre_local")
                     val ubicacion = obj.getString("ubicacion")
                     val descripcion = obj.getString("descripcion")
@@ -76,6 +77,7 @@ class GestionarLocalesActivity : AppCompatActivity() {
 
                     val view = LayoutInflater.from(this)
                         .inflate(R.layout.item_local, containerLocales, false)
+                    val btnEditar = view.findViewById<Button>(R.id.btnEditar)
 
                     val tvNombre = view.findViewById<TextView>(R.id.tvNombreLocal)
                     val tvUbicacion = view.findViewById<TextView>(R.id.tvUbicacion)
@@ -83,6 +85,27 @@ class GestionarLocalesActivity : AppCompatActivity() {
                     val tvEstado = view.findViewById<TextView>(R.id.tvEstado)
                     val estadoColor = view.findViewById<View>(R.id.estadoColor)
                     val img = view.findViewById<ImageView>(R.id.imgLocal)
+
+
+                    btnEditar.setOnClickListener {
+
+                        val intent = Intent(
+                            this,
+                            EditarLocalActivity::class.java
+                        )
+
+                        intent.putExtra("id_local", idLocal)
+                        intent.putExtra("nombre", nombre)
+                        intent.putExtra("ubicacion", ubicacion)
+                        intent.putExtra("descripcion", descripcion)
+                        intent.putExtra("estado", estado)
+                        intent.putExtra("imagen", imagen)
+
+                        startActivity(intent)
+                    }
+
+
+
 
                     // ===== ASIGNAR TEXTOS =====
                     tvNombre.text = nombre

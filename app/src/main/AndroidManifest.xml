@@ -16,6 +16,7 @@
         <activity
             android:name=".ControlPedidosActivity"
             android:exported="false" />
+        <activity android:name=".EditarLocalActivity"/>
         <activity
             android:name=".PanelEncargadoActivity"
             android:exported="false" />
@@ -28,6 +29,8 @@
         <activity
             android:name=".GestionarUsuariosActivity"
             android:exported="false" />
+
+
         <activity
             android:name=".GestionarLocalesActivity"
             android:exported="false" />

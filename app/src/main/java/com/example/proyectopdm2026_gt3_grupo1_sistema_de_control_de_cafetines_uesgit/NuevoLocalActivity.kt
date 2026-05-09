@@ -17,6 +17,7 @@ class NuevoLocalActivity : AppCompatActivity() {
     // VARIABLES
     private lateinit var btnBack: ImageView
 
+
     private lateinit var txtNombreLocal: EditText
     private lateinit var txtUbicacion: EditText
     private lateinit var txtDescripcion: EditText
@@ -51,6 +52,18 @@ class NuevoLocalActivity : AppCompatActivity() {
 
         inicializarVistas()
 
+        val adapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.estados_local,
+            android.R.layout.simple_spinner_item
+        )
+
+        adapter.setDropDownViewResource(
+            android.R.layout.simple_spinner_dropdown_item
+        )
+
+        spEstadoLocal.adapter = adapter
+
 
         // BOTÓN VOLVER
 
@@ -76,7 +89,61 @@ class NuevoLocalActivity : AppCompatActivity() {
 
         // GUARDAR
 //  Al presionar Guardar, se intenta el registro en la nube (API)
+        // =========================
+// GUARDAR
+// =========================
         btnGuardarLocal.setOnClickListener {
+
+            val nombre =
+                txtNombreLocal.text.toString().trim()
+
+            val ubicacion =
+                txtUbicacion.text.toString().trim()
+
+            val descripcion =
+                txtDescripcion.text.toString().trim()
+
+            if (nombre.isEmpty()) {
+
+                txtNombreLocal.error =
+                    "Ingresa el nombre"
+
+                txtNombreLocal.requestFocus()
+
+                return@setOnClickListener
+            }
+
+            if (ubicacion.isEmpty()) {
+
+                txtUbicacion.error =
+                    "Ingresa la ubicación"
+
+                txtUbicacion.requestFocus()
+
+                return@setOnClickListener
+            }
+
+            if (descripcion.isEmpty()) {
+
+                txtDescripcion.error =
+                    "Ingresa la descripción"
+
+                txtDescripcion.requestFocus()
+
+                return@setOnClickListener
+            }
+
+            if (imageUri == null) {
+
+                Toast.makeText(
+                    this,
+                    "Selecciona una imagen",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                return@setOnClickListener
+            }
+
             registrarLocalOnline()
         }
 

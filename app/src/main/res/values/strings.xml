@@ -25,6 +25,7 @@
 
 
 
+
     <!-- Gestion usuarios -->
     <string name="titulo_gestion_usuarios">Gestionar Usuarios</string>
     <string name="descripcion_usuarios">Administra accesos y permisos del sistema</string>
@@ -55,6 +56,21 @@
     <string name="lbl_estado">Estado</string>
     <string name="btn_guardar_local">Guardar local</string>
 
+
+
+    <string name="gestionar_productos">Gestionar Productos</string>
+    <string name="cafetin_seleccionado">Cafetín Seleccionado</string>
+    <string name="agregar_producto">+ Agregar Producto</string>
+
+
+    <string name="eliminar">Eliminar</string>
+
+    <string name="producto_pupusas">Pupusas</string>
+    <string name="precio_producto">$0.75</string>
+    <string name="estado_disponible">Disponible</string>
+
+    <string name="volver">Volver</string>
+    <string name="imagen_producto">Imagen del producto</string>
     <!-- Botones -->
     <string name="editar">Editar</string>
 
@@ -84,8 +100,8 @@
     </string-array>
 
     <string-array name="estados_local">
-        <item>Local Central</item>
-        <item>Local Ingeniería</item>
+        <item>Activo</item>
+        <item>No activo</item>
     </string-array>
 
     <string-array name="tipos_prod">
