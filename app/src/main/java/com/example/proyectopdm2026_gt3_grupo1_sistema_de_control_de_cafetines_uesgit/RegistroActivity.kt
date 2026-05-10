@@ -129,8 +129,16 @@ class RegistroActivity : AppCompatActivity() {
                     }
 
                 } catch (e: Exception) {
-                    // El servidor respondió pero hubo un error (ej: el correo ya existe)
-                    Toast.makeText(this, "Error en respuesta del servidor", Toast.LENGTH_SHORT).show()
+
+                    e.printStackTrace()
+
+                    Toast.makeText(
+                        this,
+                        "Error servidor, guardando offline",
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                    registroLocal(nombre, email, carnet, password)
                 }
 
             },

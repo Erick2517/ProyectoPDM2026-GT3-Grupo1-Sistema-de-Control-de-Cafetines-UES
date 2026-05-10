@@ -4,12 +4,11 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.model.Usuario
-import java.security.MessageDigest
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.model.Local
 import org.mindrot.jbcrypt.BCrypt
 
 class DatabaseHelper(context: Context) :
-    SQLiteOpenHelper(context, "cafetines.db", null, 13) {
+    SQLiteOpenHelper(context, "cafetines.db", null, 14) {
 
     // CREAR BD
 
@@ -94,7 +93,13 @@ class DatabaseHelper(context: Context) :
 
             put("nombre", usuario.nombre)
             put("email", usuario.email)
-            put("password", hash(usuario.password ?: ""))
+            put(
+                "password",
+                BCrypt.hashpw(
+                    usuario.password ?: "",
+                    BCrypt.gensalt()
+                )
+            )
             put("carnet", usuario.carnet ?: "")
             put("id_rol", usuario.idRol)
             put("sincronizado", 0)
@@ -221,7 +226,7 @@ class DatabaseHelper(context: Context) :
             {
                 "nombre":"${usuario.nombre}",
                 "email":"${usuario.email}",
-                "password":"${hash(usuario.password ?: "")}",
+               "password":"${'$'}{usuario.password ?: ""}",
                 "carnet":"${usuario.carnet ?: ""}",
                 "id_rol":${usuario.idRol}
             }
@@ -281,13 +286,6 @@ class DatabaseHelper(context: Context) :
 
     // HASH SHA256
 
-    private fun hash(password: String): String {
-
-        val md = MessageDigest.getInstance("SHA-256")
-
-        return md.digest(password.toByteArray())
-            .joinToString("") { "%02x".format(it) }
-    }
 
 
     // INSERTAR O ACTUALIZAR CACHE
