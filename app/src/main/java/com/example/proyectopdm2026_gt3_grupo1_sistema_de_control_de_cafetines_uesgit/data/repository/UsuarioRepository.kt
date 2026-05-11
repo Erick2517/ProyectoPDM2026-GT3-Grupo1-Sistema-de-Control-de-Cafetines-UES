@@ -2,6 +2,7 @@ package com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_u
 
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.datasource.RolLocalDataSource
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.datasource.UsuarioLocalDataSource
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Rol
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Usuario
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.AppConstants
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
@@ -42,6 +43,40 @@ class UsuarioRepository(
             }
         } catch (exception: Exception) {
             OperationResult.Error("Ocurrió un error al iniciar sesión.", exception)
+        }
+    }
+
+    fun obtenerUsuarios(): OperationResult<List<Usuario>> {
+        return try {
+            OperationResult.Success(usuarioLocalDataSource.obtenerUsuarios())
+        } catch (exception: Exception) {
+            OperationResult.Error("Ocurrió un error al consultar usuarios.", exception)
+        }
+    }
+
+    fun obtenerRoles(): OperationResult<List<Rol>> {
+        return try {
+            OperationResult.Success(rolLocalDataSource.obtenerRoles())
+        } catch (exception: Exception) {
+            OperationResult.Error("Ocurrió un error al consultar roles.", exception)
+        }
+    }
+
+    fun actualizarRolUsuario(idUsuario: Int, idRol: Int): OperationResult<Boolean> {
+        return try {
+            if (idUsuario <= 0) {
+                return OperationResult.Error("Debe seleccionar un usuario válido.")
+            }
+
+            val rol = rolLocalDataSource.obtenerRolPorId(idRol)
+            if (rol == null) {
+                return OperationResult.Error("Debe seleccionar un rol válido.")
+            }
+
+            val filasActualizadas = usuarioLocalDataSource.actualizarRolUsuario(idUsuario, idRol)
+            OperationResult.Success(filasActualizadas > 0)
+        } catch (exception: Exception) {
+            OperationResult.Error("Ocurrió un error al actualizar el rol del usuario.", exception)
         }
     }
 

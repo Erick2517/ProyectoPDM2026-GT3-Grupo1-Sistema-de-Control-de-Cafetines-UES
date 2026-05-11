@@ -3,6 +3,7 @@ package com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_u
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.datasource.PedidoLocalDataSource
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.DetallePedido
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Pedido
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.validation.PedidoValidator
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
 
 class PedidoRepository(private val pedidoLocalDataSource: PedidoLocalDataSource) {
@@ -24,6 +25,14 @@ class PedidoRepository(private val pedidoLocalDataSource: PedidoLocalDataSource)
             OperationResult.Success(pedidoLocalDataSource.obtenerPedidosPorUsuario(idUsuario))
         } catch (exception: Exception) {
             OperationResult.Error("Ocurrió un error al consultar pedidos.", exception)
+        }
+    }
+
+    fun obtenerPedidosOperativos(): OperationResult<List<Pedido>> {
+        return try {
+            OperationResult.Success(pedidoLocalDataSource.obtenerPedidosOperativos())
+        } catch (exception: Exception) {
+            OperationResult.Error("Ocurrió un error al consultar pedidos para control.", exception)
         }
     }
 
@@ -55,5 +64,14 @@ class PedidoRepository(private val pedidoLocalDataSource: PedidoLocalDataSource)
         } catch (exception: Exception) {
             OperationResult.Error("Ocurrió un error al actualizar el estado del pedido.", exception)
         }
+    }
+
+    fun avanzarEstadoPedido(idPedido: Int, estadoActual: String, nuevoEstado: String): OperationResult<Boolean> {
+        val errorValidacion = PedidoValidator.validarTransicionEstado(estadoActual, nuevoEstado)
+        if (errorValidacion != null) {
+            return OperationResult.Error(errorValidacion)
+        }
+
+        return actualizarEstadoPedido(idPedido, nuevoEstado)
     }
 }

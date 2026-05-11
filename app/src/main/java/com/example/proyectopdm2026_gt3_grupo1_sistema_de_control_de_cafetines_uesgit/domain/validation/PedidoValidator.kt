@@ -36,4 +36,40 @@ object PedidoValidator {
     fun calcularTotal(detalles: List<DetallePedido>): Double {
         return detalles.sumOf { it.subtotal }
     }
+
+    fun validarTransicionEstado(estadoActual: String, nuevoEstado: String): String? {
+        if (!estadosPermitidos.contains(estadoActual)) return "El estado actual del pedido no es válido."
+        if (!estadosPermitidos.contains(nuevoEstado)) return "El nuevo estado del pedido no es válido."
+        if (estadoActual == nuevoEstado) return "El pedido ya se encuentra en ese estado."
+        if (estadoActual == AppConstants.ESTADO_PEDIDO_CANCELADO) return "No se puede procesar un pedido cancelado."
+        if (estadoActual == AppConstants.ESTADO_PEDIDO_ENTREGADO) return "No se puede modificar un pedido entregado."
+
+        val transicionesPermitidas = mapOf(
+            AppConstants.ESTADO_PEDIDO_PAGADO to setOf(
+                AppConstants.ESTADO_PEDIDO_EN_PREPARACION,
+                AppConstants.ESTADO_PEDIDO_CANCELADO
+            ),
+            AppConstants.ESTADO_PEDIDO_EN_PREPARACION to setOf(
+                AppConstants.ESTADO_PEDIDO_LISTO,
+                AppConstants.ESTADO_PEDIDO_CANCELADO
+            ),
+            AppConstants.ESTADO_PEDIDO_LISTO to setOf(
+                AppConstants.ESTADO_PEDIDO_ENTREGADO,
+                AppConstants.ESTADO_PEDIDO_CANCELADO
+            ),
+            AppConstants.ESTADO_PEDIDO_PENDIENTE_PAGO to setOf(
+                AppConstants.ESTADO_PEDIDO_CANCELADO
+            ),
+            AppConstants.ESTADO_PEDIDO_PENDIENTE to setOf(
+                AppConstants.ESTADO_PEDIDO_CANCELADO
+            )
+        )
+
+        val permitidos = transicionesPermitidas[estadoActual].orEmpty()
+        if (!permitidos.contains(nuevoEstado)) {
+            return "No se permite cambiar de $estadoActual a $nuevoEstado."
+        }
+
+        return null
+    }
 }

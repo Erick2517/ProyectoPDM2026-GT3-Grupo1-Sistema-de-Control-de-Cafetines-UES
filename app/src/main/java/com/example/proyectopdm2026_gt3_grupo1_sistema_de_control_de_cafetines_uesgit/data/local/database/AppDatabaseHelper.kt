@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.PasswordHasher
 
 class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
     context,
@@ -23,6 +24,7 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
         db.execSQL(CREATE_PEDIDOS_ESPECIALES_TABLE)
         insertarRolesBase(db)
         insertarUbicacionesBase(db)
+        insertarUsuariosBase(db)
         insertarCatalogoBase(db)
     }
 
@@ -33,6 +35,10 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
 
         if (oldVersion < 3) {
             insertarCatalogoBase(db)
+        }
+
+        if (oldVersion < 4) {
+            insertarUsuariosBase(db)
         }
     }
 
@@ -61,6 +67,36 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
             ('Facultad de Ingeniería', 'Zona de Ingeniería dentro del campus universitario.')
             """.trimIndent()
         )
+    }
+
+    private fun insertarUsuariosBase(db: SQLiteDatabase) {
+        val idRolAdmin = obtenerIdRolPorNombre(db, "Administrador")
+        val idRolEncargado = obtenerIdRolPorNombre(db, "Encargado")
+        val idUbicacion = obtenerIdUbicacionPorNombre(db, "Campus Central")
+
+        if (idRolAdmin != null) {
+            insertarUsuarioBase(
+                db = db,
+                nombre = "Administrador Sistema",
+                email = "admin@ues.edu.sv",
+                password = "Admin123",
+                carnet = "AD00001",
+                idRol = idRolAdmin,
+                idUbicacion = idUbicacion
+            )
+        }
+
+        if (idRolEncargado != null) {
+            insertarUsuarioBase(
+                db = db,
+                nombre = "Encargado Cafetín",
+                email = "encargado@ues.edu.sv",
+                password = "Encargado123",
+                carnet = "EN00001",
+                idRol = idRolEncargado,
+                idUbicacion = idUbicacion
+            )
+        }
     }
 
     private fun insertarCatalogoBase(db: SQLiteDatabase) {
@@ -153,6 +189,32 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
         db.insert(DatabaseContract.Productos.TABLE_NAME, null, values)
     }
 
+    private fun insertarUsuarioBase(
+        db: SQLiteDatabase,
+        nombre: String,
+        email: String,
+        password: String,
+        carnet: String,
+        idRol: Int,
+        idUbicacion: Int?
+    ) {
+        val values = ContentValues().apply {
+            put(DatabaseContract.Usuarios.NOMBRE, nombre)
+            put(DatabaseContract.Usuarios.EMAIL, email)
+            put(DatabaseContract.Usuarios.PASSWORD, PasswordHasher.hash(password))
+            put(DatabaseContract.Usuarios.CARNET, carnet)
+            put(DatabaseContract.Usuarios.ID_ROL, idRol)
+            put(DatabaseContract.Usuarios.ID_UBICACION, idUbicacion)
+            put(DatabaseContract.Usuarios.ACTIVO, 1)
+        }
+        db.insertWithOnConflict(
+            DatabaseContract.Usuarios.TABLE_NAME,
+            null,
+            values,
+            SQLiteDatabase.CONFLICT_IGNORE
+        )
+    }
+
     private fun contarRegistros(db: SQLiteDatabase, tableName: String): Int {
         val cursor = db.rawQuery("SELECT COUNT(*) FROM $tableName", null)
         cursor.use {
@@ -166,6 +228,40 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
             arrayOf(DatabaseContract.Locales.ID_LOCAL),
             "${DatabaseContract.Locales.NOMBRE_LOCAL} = ?",
             arrayOf(nombreLocal),
+            null,
+            null,
+            null,
+            "1"
+        )
+
+        cursor.use {
+            return if (it.moveToFirst()) it.getInt(0) else null
+        }
+    }
+
+    private fun obtenerIdRolPorNombre(db: SQLiteDatabase, nombreRol: String): Int? {
+        val cursor = db.query(
+            DatabaseContract.Roles.TABLE_NAME,
+            arrayOf(DatabaseContract.Roles.ID_ROL),
+            "${DatabaseContract.Roles.NOMBRE_ROL} = ?",
+            arrayOf(nombreRol),
+            null,
+            null,
+            null,
+            "1"
+        )
+
+        cursor.use {
+            return if (it.moveToFirst()) it.getInt(0) else null
+        }
+    }
+
+    private fun obtenerIdUbicacionPorNombre(db: SQLiteDatabase, nombreUbicacion: String): Int? {
+        val cursor = db.query(
+            DatabaseContract.Ubicaciones.TABLE_NAME,
+            arrayOf(DatabaseContract.Ubicaciones.ID_UBICACION),
+            "${DatabaseContract.Ubicaciones.NOMBRE_UBICACION} = ?",
+            arrayOf(nombreUbicacion),
             null,
             null,
             null,

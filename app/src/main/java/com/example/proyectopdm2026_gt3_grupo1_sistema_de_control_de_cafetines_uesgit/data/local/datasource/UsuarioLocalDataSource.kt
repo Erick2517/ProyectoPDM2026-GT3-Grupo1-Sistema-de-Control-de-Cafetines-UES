@@ -25,6 +25,49 @@ class UsuarioLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
         )
     }
 
+    fun actualizarUsuario(usuario: Usuario): Int {
+        return databaseHelper.writableDatabase.update(
+            DatabaseContract.Usuarios.TABLE_NAME,
+            usuario.toContentValues(),
+            "${DatabaseContract.Usuarios.ID_USUARIO} = ?",
+            arrayOf(usuario.idUsuario.toString())
+        )
+    }
+
+    fun obtenerUsuarios(): List<Usuario> {
+        val usuarios = mutableListOf<Usuario>()
+        val cursor = databaseHelper.readableDatabase.query(
+            DatabaseContract.Usuarios.TABLE_NAME,
+            null,
+            null,
+            null,
+            null,
+            null,
+            DatabaseContract.Usuarios.NOMBRE
+        )
+
+        cursor.use {
+            while (it.moveToNext()) {
+                usuarios.add(it.toUsuario())
+            }
+        }
+
+        return usuarios
+    }
+
+    fun actualizarRolUsuario(idUsuario: Int, idRol: Int): Int {
+        val values = ContentValues().apply {
+            put(DatabaseContract.Usuarios.ID_ROL, idRol)
+        }
+
+        return databaseHelper.writableDatabase.update(
+            DatabaseContract.Usuarios.TABLE_NAME,
+            values,
+            "${DatabaseContract.Usuarios.ID_USUARIO} = ?",
+            arrayOf(idUsuario.toString())
+        )
+    }
+
     fun obtenerUsuarioPorEmail(email: String): Usuario? {
         return obtenerUsuarioPorCampo(DatabaseContract.Usuarios.EMAIL, email)
     }
@@ -64,6 +107,35 @@ class UsuarioLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
 
         cursor.use {
             return it.moveToFirst()
+        }
+    }
+
+    fun existeEmailOCarnetEnOtroUsuario(email: String, carnet: String, idUsuario: Int): Boolean {
+        val cursor = databaseHelper.readableDatabase.query(
+            DatabaseContract.Usuarios.TABLE_NAME,
+            arrayOf(DatabaseContract.Usuarios.ID_USUARIO),
+            "(${DatabaseContract.Usuarios.EMAIL} = ? OR ${DatabaseContract.Usuarios.CARNET} = ?) AND ${DatabaseContract.Usuarios.ID_USUARIO} != ?",
+            arrayOf(email, carnet, idUsuario.toString()),
+            null,
+            null,
+            null,
+            "1"
+        )
+
+        cursor.use {
+            return it.moveToFirst()
+        }
+    }
+
+    private fun Usuario.toContentValues(): ContentValues {
+        return ContentValues().apply {
+            put(DatabaseContract.Usuarios.NOMBRE, nombre)
+            put(DatabaseContract.Usuarios.EMAIL, email)
+            put(DatabaseContract.Usuarios.PASSWORD, password)
+            put(DatabaseContract.Usuarios.CARNET, carnet)
+            put(DatabaseContract.Usuarios.ID_ROL, idRol)
+            put(DatabaseContract.Usuarios.ID_UBICACION, idUbicacion)
+            put(DatabaseContract.Usuarios.ACTIVO, if (activo) 1 else 0)
         }
     }
 

@@ -63,6 +63,35 @@ class PedidoLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
         return pedidos
     }
 
+    fun obtenerPedidosOperativos(): List<Pedido> {
+        val pedidos = mutableListOf<Pedido>()
+        val estadosOperativos = arrayOf(
+            "pagado",
+            "en preparación",
+            "listo para entregar",
+            "entregado",
+            "cancelado"
+        )
+        val placeholders = estadosOperativos.joinToString(",") { "?" }
+        val cursor = databaseHelper.readableDatabase.query(
+            DatabaseContract.Pedidos.TABLE_NAME,
+            null,
+            "LOWER(${DatabaseContract.Pedidos.ESTADO_PEDIDO}) IN ($placeholders)",
+            estadosOperativos,
+            null,
+            null,
+            "${DatabaseContract.Pedidos.FECHA_PEDIDO} DESC"
+        )
+
+        cursor.use {
+            while (it.moveToNext()) {
+                pedidos.add(it.toPedido())
+            }
+        }
+
+        return pedidos
+    }
+
     fun obtenerPedidoPorId(idPedido: Int): Pedido? {
         val cursor = databaseHelper.readableDatabase.query(
             DatabaseContract.Pedidos.TABLE_NAME,
