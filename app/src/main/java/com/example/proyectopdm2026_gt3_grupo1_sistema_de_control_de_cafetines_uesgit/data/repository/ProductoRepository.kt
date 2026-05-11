@@ -25,4 +25,17 @@ class ProductoRepository(private val productoLocalDataSource: ProductoLocalDataS
             OperationResult.Error("Ocurrió un error al consultar productos.", exception)
         }
     }
+
+    fun obtenerProductoPorId(idProducto: Int): OperationResult<Producto> {
+        return try {
+            val producto = productoLocalDataSource.obtenerProductoPorId(idProducto)
+            if (producto == null) {
+                OperationResult.Error("No se encontró el producto.")
+            } else {
+                OperationResult.Success(producto)
+            }
+        } catch (exception: Exception) {
+            OperationResult.Error("Ocurrió un error al consultar el producto.", exception)
+        }
+    }
 }

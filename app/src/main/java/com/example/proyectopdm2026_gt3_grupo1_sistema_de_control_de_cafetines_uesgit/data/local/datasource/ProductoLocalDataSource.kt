@@ -32,6 +32,23 @@ class ProductoLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
         )
     }
 
+    fun obtenerProductoPorId(idProducto: Int): Producto? {
+        val cursor = databaseHelper.readableDatabase.query(
+            DatabaseContract.Productos.TABLE_NAME,
+            null,
+            "${DatabaseContract.Productos.ID_PRODUCTO} = ?",
+            arrayOf(idProducto.toString()),
+            null,
+            null,
+            null,
+            "1"
+        )
+
+        cursor.use {
+            return if (it.moveToFirst()) it.toProducto() else null
+        }
+    }
+
     fun obtenerProductosDisponiblesPorLocal(idLocal: Int): List<Producto> {
         return consultarProductos(
             "${DatabaseContract.Productos.ID_LOCAL} = ? AND ${DatabaseContract.Productos.DISPONIBILIDAD} = ? AND ${DatabaseContract.Productos.STOCK} > 0",

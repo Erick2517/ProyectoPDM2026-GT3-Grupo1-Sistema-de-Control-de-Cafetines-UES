@@ -36,4 +36,12 @@ class PagoRepository(private val pagoLocalDataSource: PagoLocalDataSource) {
             OperationResult.Error("Ocurrió un error al confirmar el pago.", exception)
         }
     }
+
+    fun obtenerPagosPorPedido(idPedido: Int): OperationResult<List<Pago>> {
+        return try {
+            OperationResult.Success(pagoLocalDataSource.obtenerPagosPorPedido(idPedido))
+        } catch (exception: Exception) {
+            OperationResult.Error("Ocurrió un error al consultar pagos del pedido.", exception)
+        }
+    }
 }

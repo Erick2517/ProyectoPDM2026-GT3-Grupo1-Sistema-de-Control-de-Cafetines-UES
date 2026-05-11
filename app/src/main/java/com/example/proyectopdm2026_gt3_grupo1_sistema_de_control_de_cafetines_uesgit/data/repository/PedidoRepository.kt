@@ -40,6 +40,14 @@ class PedidoRepository(private val pedidoLocalDataSource: PedidoLocalDataSource)
         }
     }
 
+    fun obtenerDetallesPorPedido(idPedido: Int): OperationResult<List<DetallePedido>> {
+        return try {
+            OperationResult.Success(pedidoLocalDataSource.obtenerDetallesPorPedido(idPedido))
+        } catch (exception: Exception) {
+            OperationResult.Error("Ocurrió un error al consultar el detalle del pedido.", exception)
+        }
+    }
+
     fun actualizarEstadoPedido(idPedido: Int, nuevoEstado: String): OperationResult<Boolean> {
         return try {
             val filasActualizadas = pedidoLocalDataSource.actualizarEstadoPedido(idPedido, nuevoEstado)
