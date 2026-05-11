@@ -25,8 +25,59 @@ class LocalLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
         )
     }
 
+    fun obtenerLocalPorId(idLocal: Int): Local? {
+        val cursor = databaseHelper.readableDatabase.query(
+            DatabaseContract.Locales.TABLE_NAME,
+            null,
+            "${DatabaseContract.Locales.ID_LOCAL} = ?",
+            arrayOf(idLocal.toString()),
+            null,
+            null,
+            null,
+            "1"
+        )
+
+        cursor.use {
+            return if (it.moveToFirst()) it.toLocal() else null
+        }
+    }
+
     fun obtenerLocales(): List<Local> {
         return consultarLocales(null, null)
+    }
+
+    fun existeNombreLocal(nombreLocal: String): Boolean {
+        val cursor = databaseHelper.readableDatabase.query(
+            DatabaseContract.Locales.TABLE_NAME,
+            arrayOf(DatabaseContract.Locales.ID_LOCAL),
+            "LOWER(${DatabaseContract.Locales.NOMBRE_LOCAL}) = LOWER(?)",
+            arrayOf(nombreLocal),
+            null,
+            null,
+            null,
+            "1"
+        )
+
+        cursor.use {
+            return it.moveToFirst()
+        }
+    }
+
+    fun existeNombreLocalEnOtroRegistro(nombreLocal: String, idLocal: Int): Boolean {
+        val cursor = databaseHelper.readableDatabase.query(
+            DatabaseContract.Locales.TABLE_NAME,
+            arrayOf(DatabaseContract.Locales.ID_LOCAL),
+            "LOWER(${DatabaseContract.Locales.NOMBRE_LOCAL}) = LOWER(?) AND ${DatabaseContract.Locales.ID_LOCAL} != ?",
+            arrayOf(nombreLocal, idLocal.toString()),
+            null,
+            null,
+            null,
+            "1"
+        )
+
+        cursor.use {
+            return it.moveToFirst()
+        }
     }
 
     fun obtenerLocalesActivos(): List<Local> {
