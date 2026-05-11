@@ -32,6 +32,10 @@ class ProductoLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
         )
     }
 
+    fun obtenerProductos(): List<Producto> {
+        return consultarProductos(null, null)
+    }
+
     fun obtenerProductoPorId(idProducto: Int): Producto? {
         val cursor = databaseHelper.readableDatabase.query(
             DatabaseContract.Productos.TABLE_NAME,
@@ -56,7 +60,41 @@ class ProductoLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
         )
     }
 
-    private fun consultarProductos(selection: String, selectionArgs: Array<String>): List<Producto> {
+    fun existeProductoEnLocal(nombreProducto: String, idLocal: Int): Boolean {
+        val cursor = databaseHelper.readableDatabase.query(
+            DatabaseContract.Productos.TABLE_NAME,
+            arrayOf(DatabaseContract.Productos.ID_PRODUCTO),
+            "LOWER(${DatabaseContract.Productos.NOMBRE_PRODUCTO}) = LOWER(?) AND ${DatabaseContract.Productos.ID_LOCAL} = ?",
+            arrayOf(nombreProducto, idLocal.toString()),
+            null,
+            null,
+            null,
+            "1"
+        )
+
+        cursor.use {
+            return it.moveToFirst()
+        }
+    }
+
+    fun existeProductoEnLocalEnOtroRegistro(nombreProducto: String, idLocal: Int, idProducto: Int): Boolean {
+        val cursor = databaseHelper.readableDatabase.query(
+            DatabaseContract.Productos.TABLE_NAME,
+            arrayOf(DatabaseContract.Productos.ID_PRODUCTO),
+            "LOWER(${DatabaseContract.Productos.NOMBRE_PRODUCTO}) = LOWER(?) AND ${DatabaseContract.Productos.ID_LOCAL} = ? AND ${DatabaseContract.Productos.ID_PRODUCTO} != ?",
+            arrayOf(nombreProducto, idLocal.toString(), idProducto.toString()),
+            null,
+            null,
+            null,
+            "1"
+        )
+
+        cursor.use {
+            return it.moveToFirst()
+        }
+    }
+
+    private fun consultarProductos(selection: String?, selectionArgs: Array<String>?): List<Producto> {
         val productos = mutableListOf<Producto>()
         val cursor = databaseHelper.readableDatabase.query(
             DatabaseContract.Productos.TABLE_NAME,

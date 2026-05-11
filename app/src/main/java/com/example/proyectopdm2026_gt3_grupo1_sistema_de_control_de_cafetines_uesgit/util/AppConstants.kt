@@ -41,4 +41,6 @@ object AppConstants {
     const val EXTRA_NOMBRE_LOCAL = "extra_nombre_local"
     const val EXTRA_ID_PEDIDO = "extra_id_pedido"
     const val EXTRA_MODO_EDICION_LOCAL = "extra_modo_edicion_local"
+    const val EXTRA_ID_PRODUCTO = "extra_id_producto"
+    const val EXTRA_MODO_EDICION_PRODUCTO = "extra_modo_edicion_producto"
 }
