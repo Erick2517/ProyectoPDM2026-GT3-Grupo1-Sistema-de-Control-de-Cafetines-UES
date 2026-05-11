@@ -4,9 +4,13 @@ import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.view.Gravity
+import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.Spinner
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -15,12 +19,16 @@ import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.database.AppDatabaseHelper
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.datasource.LocalLocalDataSource
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.datasource.PedidoLocalDataSource
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.datasource.ProductoLocalDataSource
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.repository.LocalRepository
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.repository.PedidoRepository
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.repository.ProductoRepository
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.DetallePedido
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Local
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Pedido
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Producto
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.AppConstants
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
 import java.util.Locale
@@ -28,6 +36,8 @@ import java.util.Locale
 class ControlPedidosActivity : AppCompatActivity() {
     private lateinit var pedidoRepository: PedidoRepository
     private lateinit var productoRepository: ProductoRepository
+    private lateinit var localRepository: LocalRepository
+    private var locales: List<Local> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +45,7 @@ class ControlPedidosActivity : AppCompatActivity() {
         setContentView(R.layout.activity_control_pedidos)
 
         configurarDependencias()
+        cargarLocales()
 
         val btnBack = findViewById<ImageView>(R.id.btnBack)
         btnBack.setOnClickListener {
@@ -56,6 +67,28 @@ class ControlPedidosActivity : AppCompatActivity() {
         val databaseHelper = AppDatabaseHelper(this)
         pedidoRepository = PedidoRepository(PedidoLocalDataSource(databaseHelper))
         productoRepository = ProductoRepository(ProductoLocalDataSource(databaseHelper))
+        localRepository = LocalRepository(LocalLocalDataSource(databaseHelper))
+    }
+
+    private fun cargarLocales() {
+        when (val resultado = localRepository.obtenerLocalesActivos()) {
+            is OperationResult.Error -> mostrarMensaje(resultado.message)
+            is OperationResult.Success -> {
+                locales = resultado.data
+                val nombresLocales = listOf("Todos los locales") + locales.map { it.nombreLocal }
+                val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, nombresLocales)
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                val spFiltro = findViewById<Spinner>(R.id.spFiltroLocalPedidos)
+                spFiltro.adapter = adapter
+                spFiltro.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                        cargarPedidos()
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>?) = Unit
+                }
+            }
+        }
     }
 
     private fun cargarPedidos() {
@@ -64,7 +97,25 @@ class ControlPedidosActivity : AppCompatActivity() {
                 mostrarMensaje(resultado.message)
                 mostrarPedidos(emptyList())
             }
-            is OperationResult.Success -> mostrarPedidos(resultado.data)
+            is OperationResult.Success -> mostrarPedidos(filtrarPedidosPorLocal(resultado.data))
+        }
+    }
+
+    private fun filtrarPedidosPorLocal(pedidos: List<Pedido>): List<Pedido> {
+        val idLocal = obtenerIdLocalFiltrado() ?: return pedidos
+        return pedidos.filter { pedido -> pedidoPerteneceALocal(pedido.idPedido, idLocal) }
+    }
+
+    private fun obtenerIdLocalFiltrado(): Int? {
+        val posicion = findViewById<Spinner>(R.id.spFiltroLocalPedidos).selectedItemPosition
+        if (posicion <= 0) return null
+        return locales.getOrNull(posicion - 1)?.idLocal
+    }
+
+    private fun pedidoPerteneceALocal(idPedido: Int, idLocal: Int): Boolean {
+        val detalles = obtenerDetallesPedido(idPedido)
+        return detalles.any { detalle ->
+            obtenerProducto(detalle.idProducto)?.idLocal == idLocal
         }
     }
 
@@ -104,6 +155,7 @@ class ControlPedidosActivity : AppCompatActivity() {
         }
 
         contenido.addView(crearFilaEncabezado(pedido))
+        contenido.addView(crearTexto("Local: ${obtenerNombreLocalPedido(pedido.idPedido)}", 13f, false, "#555555"))
         contenido.addView(crearTexto("Fecha: ${pedido.fechaPedido}", 12f, false, "#555555"))
         contenido.addView(crearTexto("Tipo: ${pedido.tipoPedido}", 13f, false, "#555555"))
         contenido.addView(crearTexto("Productos: ${obtenerResumenProductos(pedido.idPedido)}", 12f, false, "#555555"))
@@ -247,10 +299,7 @@ class ControlPedidosActivity : AppCompatActivity() {
     }
 
     private fun obtenerResumenProductos(idPedido: Int): String {
-        val detalles = when (val resultado = pedidoRepository.obtenerDetallesPorPedido(idPedido)) {
-            is OperationResult.Error -> return "No disponible"
-            is OperationResult.Success -> resultado.data
-        }
+        val detalles = obtenerDetallesPedido(idPedido)
 
         if (detalles.isEmpty()) return "Sin detalle"
 
@@ -260,10 +309,27 @@ class ControlPedidosActivity : AppCompatActivity() {
     }
 
     private fun obtenerNombreProducto(detalle: DetallePedido): String {
-        return when (val resultado = productoRepository.obtenerProductoPorId(detalle.idProducto)) {
-            is OperationResult.Error -> "Producto #${detalle.idProducto}"
-            is OperationResult.Success -> resultado.data.nombreProducto
+        return obtenerProducto(detalle.idProducto)?.nombreProducto ?: "Producto #${detalle.idProducto}"
+    }
+
+    private fun obtenerDetallesPedido(idPedido: Int): List<DetallePedido> {
+        return when (val resultado = pedidoRepository.obtenerDetallesPorPedido(idPedido)) {
+            is OperationResult.Error -> emptyList()
+            is OperationResult.Success -> resultado.data
         }
+    }
+
+    private fun obtenerProducto(idProducto: Int): Producto? {
+        return when (val resultado = productoRepository.obtenerProductoPorId(idProducto)) {
+            is OperationResult.Error -> null
+            is OperationResult.Success -> resultado.data
+        }
+    }
+
+    private fun obtenerNombreLocalPedido(idPedido: Int): String {
+        val detalles = obtenerDetallesPedido(idPedido)
+        val idLocal = detalles.firstNotNullOfOrNull { detalle -> obtenerProducto(detalle.idProducto)?.idLocal }
+        return locales.firstOrNull { it.idLocal == idLocal }?.nombreLocal ?: "No identificado"
     }
 
     private fun obtenerSiguienteEstado(estadoActual: String): String? {
