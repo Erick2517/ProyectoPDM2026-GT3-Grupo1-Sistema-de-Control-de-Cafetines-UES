@@ -86,6 +86,37 @@
     <string name="btn_pedido_especial">Pedido especial</string>
     <string name="btnCerrarSesion">Cerrar sesión</string>
 
+
+    <!-- GENERALES -->
+
+    <string name="carrito">Carrito</string>
+
+    <!-- PRODUCTOS -->
+    <string name="productos">Productos</string>
+    <string name="cafetin_central">Cafetín Central</string>
+
+    <string name="selecciona_productos">
+        Selecciona los productos que deseas agregar
+    </string>
+
+    <string name="pupusas">Pupusas</string>
+
+    <string name="antojito">Antojito</string>
+
+
+    <string name="ver_carrito">Ver carrito</string>
+
+
+    <string name="producto">Producto</string>
+
+    <string name="disponible">Disponible</string>
+    <string name="agregar">Agregar</string>
+
+
+
+
+
+
     <!-- LOCALES -->
     <string name="tv_local_1">Cafetín Central</string>
     <string name="tv_local_2">Cafetín Ingeniería</string>

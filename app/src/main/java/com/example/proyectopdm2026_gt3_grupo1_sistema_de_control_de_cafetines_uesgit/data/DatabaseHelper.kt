@@ -5,68 +5,169 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.model.Usuario
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.model.Local
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.model.Carrito
 import org.mindrot.jbcrypt.BCrypt
 
 class DatabaseHelper(context: Context) :
-    SQLiteOpenHelper(context, "cafetines.db", null, 14) {
+    SQLiteOpenHelper(context, "cafetines.db", null, 18) {
 
     // CREAR BD
 
     override fun onCreate(db: SQLiteDatabase) {
 
-        // LOCALES
+        // ===================== ROLES =====================
         db.execSQL("""
-    CREATE TABLE locales (
-        id_local INTEGER PRIMARY KEY AUTOINCREMENT,
-        nombre_local TEXT NOT NULL UNIQUE,
-        ubicacion TEXT NOT NULL,
-        descripcion TEXT NOT NULL,
-        imagen TEXT,
-        entrega_campus INTEGER,
-        estado TEXT NOT NULL,
-        sincronizado INTEGER DEFAULT 0
-    )
-""")
+        CREATE TABLE roles (
+            id_rol INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre_rol TEXT NOT NULL UNIQUE,
+            descripcion TEXT,
+            estado TEXT NOT NULL
+        )
+    """)
 
-        // ROLES
+        // ===================== OPCIONES MENU =====================
         db.execSQL("""
-            CREATE TABLE roles (
-                id_rol INTEGER PRIMARY KEY,
-                nombre_rol TEXT NOT NULL,
-                descripcion TEXT,
-                estado TEXT NOT NULL
-            )
-        """)
-        // USUARIOS (CACHE LOCAL)
+        CREATE TABLE opciones_menu (
+            id_opcion INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre_opcion TEXT NOT NULL UNIQUE,
+            descripcion_opcion TEXT,
+            estado TEXT NOT NULL
+        )
+    """)
+
+        // ===================== UBICACIONES =====================
         db.execSQL("""
-            CREATE TABLE usuarios (
-                id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
-                nombre TEXT NOT NULL,
-                email TEXT NOT NULL UNIQUE,
-                password TEXT NOT NULL,
-                carnet TEXT NOT NULL,
-                id_rol INTEGER NOT NULL,
-                sincronizado INTEGER DEFAULT 0,
-                FOREIGN KEY (id_rol) REFERENCES roles(id_rol)
-            )
-        """)
-        // COLA DE SINCRONIZACIÓN
+        CREATE TABLE ubicaciones (
+            id_ubicacion INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre_ubicacion TEXT NOT NULL UNIQUE,
+            descripcion TEXT,
+            estado TEXT NOT NULL
+        )
+    """)
+
+        // ===================== LOCALES =====================
         db.execSQL("""
-            CREATE TABLE sync_queue (
-                id_sync INTEGER PRIMARY KEY AUTOINCREMENT,
-                tabla TEXT NOT NULL,
-                accion TEXT NOT NULL,
-                datos TEXT NOT NULL,
-                estado TEXT DEFAULT 'pendiente'
-            )
-        """)
-        // ROLES INICIALES
+        CREATE TABLE locales (
+            id_local INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre_local TEXT NOT NULL UNIQUE,
+            ubicacion TEXT NOT NULL,
+            descripcion TEXT NOT NULL,
+            imagen TEXT,
+            entrega_campus INTEGER,
+            estado TEXT NOT NULL,
+            sincronizado INTEGER DEFAULT 0
+        )
+    """)
+
+        // ===================== USUARIOS =====================
         db.execSQL("""
-            INSERT INTO roles (id_rol, nombre_rol, descripcion, estado) VALUES
-            (1, 'Usuario', 'Usuario normal', 'Activo'),
-            (2, 'Administrador', 'Acceso total', 'Activo'),
-            (3, 'Encargado', 'Gestion de cafetines', 'Activo')
-        """)
+        CREATE TABLE usuarios (
+            id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT NOT NULL,
+            email TEXT NOT NULL UNIQUE,
+            password TEXT NOT NULL,
+            carnet TEXT NOT NULL UNIQUE,
+            id_rol INTEGER NOT NULL,
+            sincronizado INTEGER DEFAULT 0,
+            FOREIGN KEY (id_rol) REFERENCES roles(id_rol)
+        )
+    """)
+
+        // ===================== ROLES - OPCIONES MENU =====================
+        db.execSQL("""
+        CREATE TABLE roles_opciones_menu (
+            id_rol_opcion INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_rol INTEGER NOT NULL,
+            id_opcion INTEGER NOT NULL,
+            UNIQUE (id_rol, id_opcion),
+            FOREIGN KEY (id_rol) REFERENCES roles(id_rol),
+            FOREIGN KEY (id_opcion) REFERENCES opciones_menu(id_opcion)
+        )
+    """)
+
+        // ===================== PRODUCTOS =====================
+        db.execSQL("""
+        CREATE TABLE productos (
+            id_producto INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre_producto TEXT NOT NULL,
+            precio NUMERIC NOT NULL CHECK (precio >= 0),
+            disponibilidad TEXT NOT NULL,
+            id_local INTEGER NOT NULL,
+            FOREIGN KEY (id_local) REFERENCES locales(id_local)
+        )
+    """)
+
+        // ===================== PEDIDOS =====================
+        db.execSQL("""
+        CREATE TABLE pedidos (
+            id_pedido INTEGER PRIMARY KEY AUTOINCREMENT,
+            fecha_pedido TEXT NOT NULL,
+            tipo_pedido TEXT NOT NULL,
+            estado_pedido TEXT NOT NULL,
+            total NUMERIC NOT NULL CHECK (total >= 0),
+            id_usuario INTEGER NOT NULL,
+            id_ubicacion INTEGER NOT NULL,
+            FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario),
+            FOREIGN KEY (id_ubicacion) REFERENCES ubicaciones(id_ubicacion)
+        )
+    """)
+
+        // ===================== DETALLE PEDIDO =====================
+        db.execSQL("""
+        CREATE TABLE detalle_pedido (
+            id_detalle INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_pedido INTEGER NOT NULL,
+            id_producto INTEGER NOT NULL,
+            cantidad INTEGER NOT NULL CHECK (cantidad > 0),
+            subtotal NUMERIC NOT NULL CHECK (subtotal >= 0),
+            FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido),
+            FOREIGN KEY (id_producto) REFERENCES productos(id_producto)
+        )
+    """)
+
+        // ===================== PAGOS =====================
+        db.execSQL("""
+        CREATE TABLE pagos (
+            id_pago INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_pedido INTEGER NOT NULL UNIQUE,
+            metodo_pago TEXT NOT NULL,
+            monto NUMERIC NOT NULL CHECK (monto >= 0),
+            fecha_pago TEXT NOT NULL,
+            FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido)
+        )
+    """)
+
+        // ===================== PEDIDOS ESPECIALES =====================
+        db.execSQL("""
+        CREATE TABLE pedidos_especiales (
+            id_pedido_especial INTEGER PRIMARY KEY AUTOINCREMENT,
+            id_pedido INTEGER NOT NULL UNIQUE,
+            descripcion_evento TEXT,
+            monto_minimo NUMERIC NOT NULL,
+            monto_maximo NUMERIC NOT NULL,
+            CHECK (monto_minimo >= 0 AND monto_maximo >= monto_minimo),
+            FOREIGN KEY (id_pedido) REFERENCES pedidos(id_pedido)
+        )
+    """)
+
+        // ===================== SYNC QUEUE =====================
+        db.execSQL("""
+        CREATE TABLE sync_queue (
+            id_sync INTEGER PRIMARY KEY AUTOINCREMENT,
+            tabla TEXT NOT NULL,
+            accion TEXT NOT NULL,
+            datos TEXT NOT NULL,
+            estado TEXT DEFAULT 'pendiente'
+        )
+    """)
+
+        // ===================== INSERT ROLES =====================
+        db.execSQL("""
+        INSERT INTO roles (id_rol, nombre_rol, descripcion, estado) VALUES
+        (1, 'Usuario', 'Usuario normal', 'Activo'),
+        (2, 'Administrador', 'Acceso total', 'Activo'),
+        (3, 'Encargado', 'Gestion de cafetines', 'Activo')
+    """)
     }
 
     // =========================
@@ -74,6 +175,7 @@ class DatabaseHelper(context: Context) :
     // =========================
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
 
+        db.execSQL("DROP TABLE IF EXISTS carrito")
         db.execSQL("DROP TABLE IF EXISTS sync_queue")
         db.execSQL("DROP TABLE IF EXISTS usuarios")
         db.execSQL("DROP TABLE IF EXISTS roles")
@@ -81,10 +183,7 @@ class DatabaseHelper(context: Context) :
 
         onCreate(db)
     }
-
-
     // REGISTRO LOCAL (OFFLINE)
-
     fun insertarUsuario(usuario: Usuario): Boolean {
 
         val db = writableDatabase
@@ -115,6 +214,20 @@ class DatabaseHelper(context: Context) :
 
         return result != -1L
     }
+    fun eliminarProductoCarrito(idProducto: Int) {
+
+        val db = writableDatabase
+
+        db.delete(
+            "carrito",
+            "id_producto = ?",
+            arrayOf(idProducto.toString())
+        )
+
+        db.close()
+    }
+    //LIMPIAR CARRITO
+
 
     // LOGIN LOCAL (OFFLINE)
 
@@ -245,7 +358,6 @@ class DatabaseHelper(context: Context) :
         db.close()
     }
 
-
     // PENDIENTES SYNC
 
     fun obtenerPendientesSync(): List<String> {
@@ -258,7 +370,6 @@ class DatabaseHelper(context: Context) :
             "SELECT datos FROM sync_queue WHERE estado = 'pendiente'",
             null
         )
-
         while (cursor.moveToNext()) {
             lista.add(cursor.getString(0))
         }
@@ -268,8 +379,6 @@ class DatabaseHelper(context: Context) :
 
         return lista
     }
-
-
     // MARCAR SYNC
 
     fun marcarSincronizado() {
@@ -282,12 +391,6 @@ class DatabaseHelper(context: Context) :
 
         db.close()
     }
-
-
-    // HASH SHA256
-
-
-
     // INSERTAR O ACTUALIZAR CACHE
 
     fun insertarLocal(local: Local): Boolean {
@@ -312,10 +415,9 @@ class DatabaseHelper(context: Context) :
 
         return result != -1L
     }
+
     fun insertarOActualizarUsuario(usuario: Usuario) {
-
         val db = writableDatabase
-
         val values = ContentValues().apply {
 
             put("id_usuario", usuario.idUsuario)
@@ -328,9 +430,7 @@ class DatabaseHelper(context: Context) :
             put("carnet", usuario.carnet)
             put("id_rol", usuario.idRol)
         }
-
         try {
-
             val cursor = db.rawQuery(
                 "SELECT id_usuario FROM usuarios WHERE id_usuario = ?",
                 arrayOf(usuario.idUsuario.toString())
@@ -361,10 +461,7 @@ class DatabaseHelper(context: Context) :
 
         db.close()
     }
-
-
     // LIMPIAR CACHE
-
     fun eliminarUsuarios() {
 
         val db = writableDatabase
@@ -373,5 +470,6 @@ class DatabaseHelper(context: Context) :
 
         db.close()
     }
+
 
 }

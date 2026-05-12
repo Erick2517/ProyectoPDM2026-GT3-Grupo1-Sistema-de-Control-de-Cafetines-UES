@@ -23,8 +23,7 @@ class RegistroActivity : AppCompatActivity() {
     lateinit var txtPassword: EditText
     lateinit var txtConfirmPassword: EditText
 
-    // Dirección IP del servidor local (XAMPP).
-    // Nota: 192.168.1.3 debe ser la IP de su PC en la red local.
+
     private val URL_REGISTER = "http://192.168.1.3/cafetines_api/auth/register.php"
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +41,7 @@ class RegistroActivity : AppCompatActivity() {
         txtPassword = findViewById(R.id.txtPassword)
         txtConfirmPassword = findViewById(R.id.txtConfirmPassword)
 
-        // Evento para ir al Login si ya se tiene cuenta
+
         lblLogin.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
@@ -77,7 +76,7 @@ class RegistroActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            // Si pasa todas las validaciones, intenta registrar en la nube (API)
+            // Si pasa todas las validaciones, intenta registrar en la nube
             registerAPI(nombre, correo, carnet, password)
         }
 
@@ -115,7 +114,7 @@ class RegistroActivity : AppCompatActivity() {
                             idRol = data.getInt("id_rol")
                         )
 
-                        // Sincronizamos con la base de datos interna (SQLite) para inicio de sesión rápido
+                        // Sincronizamos con la base de datos interna
                         val db = DatabaseHelper(this)
                         db.insertarOActualizarUsuario(usuario)
 
