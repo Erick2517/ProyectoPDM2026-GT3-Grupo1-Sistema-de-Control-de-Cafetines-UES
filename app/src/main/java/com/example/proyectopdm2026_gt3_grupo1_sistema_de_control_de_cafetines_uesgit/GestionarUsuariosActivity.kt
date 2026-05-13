@@ -19,7 +19,7 @@ import org.json.JSONObject
 
 class GestionarUsuariosActivity : AppCompatActivity() {
 
-    // URL de tu API en PHP
+    // URL  API en PHP
     private val URL_USERS = "http://192.168.1.3/cafetines_api/users/get_usuarios.php"
 
     private lateinit var rvUsuarios: RecyclerView
@@ -31,8 +31,7 @@ class GestionarUsuariosActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_gestionar_usuarios)
 
-        // 2. CORRECCIÓN VISUAL: Ajusta el padding para que el TopBar respete la barra de estado
-        // IMPORTANTE: Asegúrate de que el ID en tu XML sea android:id="@+id/main"
+
         val mainLayout = findViewById<androidx.constraintlayout.widget.ConstraintLayout>(R.id.main)
         ViewCompat.setOnApplyWindowInsetsListener(mainLayout) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
