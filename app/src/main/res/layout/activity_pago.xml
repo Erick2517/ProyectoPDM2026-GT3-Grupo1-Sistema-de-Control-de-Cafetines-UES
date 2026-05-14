@@ -65,6 +65,7 @@
 
             <!-- Tarjeta Pedido -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/cardResumenPedidoPago"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -78,6 +79,7 @@
                     android:padding="16dp">
 
                     <TextView
+                        android:id="@+id/tvNumeroPedidoPago"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Pedido #004"
@@ -86,6 +88,7 @@
                         android:textStyle="bold" />
 
                     <TextView
+                        android:id="@+id/tvTotalPedidoPago"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Total a pagar: $3.00"
@@ -96,6 +99,7 @@
 
             <!-- Opción: Efectivo -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/cardEfectivo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
@@ -117,6 +121,7 @@
                         android:src="@drawable/dollar" />
 
                     <TextView
+                        android:id="@+id/tvMetodoEfectivo"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
@@ -128,10 +133,11 @@
 
             <!-- Opción: Tarjeta (seleccionada) -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/cardTarjeta"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="12dp"
-                app:cardBackgroundColor="@color/wine"
+                app:cardBackgroundColor="#FFFFFF"
                 app:cardCornerRadius="8dp"
                 app:cardElevation="2dp">
 
@@ -149,17 +155,19 @@
                         android:src="@drawable/creditcard" />
 
                     <TextView
+                        android:id="@+id/tvMetodoTarjeta"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
                         android:text="Tarjeta"
-                        android:textColor="@android:color/white"
+                        android:textColor="#111111"
                         android:textSize="16sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
             <!-- Opción: Bitcoin -->
             <androidx.cardview.widget.CardView
+                android:id="@+id/cardBitcoin"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="20dp"
@@ -181,6 +189,7 @@
                         android:src="@drawable/bitcoin" />
 
                     <TextView
+                        android:id="@+id/tvMetodoBitcoin"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="12dp"
@@ -189,6 +198,27 @@
                         android:textSize="16sp" />
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="Monto del pago"
+                android:textColor="#333333"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/txtMontoPago"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@color/wine"
+                android:hint="0.00"
+                android:inputType="numberDecimal"
+                android:minHeight="48dp"
+                android:textColor="#111111"
+                android:textColorHint="#777777" />
 
             <!-- Resumen de costos -->
             <androidx.cardview.widget.CardView
@@ -221,6 +251,7 @@
                             android:textSize="13sp" />
 
                         <TextView
+                            android:id="@+id/tvSubtotalPago"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="$3.00"
@@ -244,6 +275,7 @@
                             android:textSize="13sp" />
 
                         <TextView
+                            android:id="@+id/tvCostoEntregaPago"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="$0.00"
@@ -274,6 +306,7 @@
                             android:textStyle="bold" />
 
                         <TextView
+                            android:id="@+id/tvTotalResumenPago"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="$3.00"

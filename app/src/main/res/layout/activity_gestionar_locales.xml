@@ -66,7 +66,7 @@
                 android:id="@+id/tvIndicacion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Administrar los Cafentines registrados"
+                android:text="Administra los cafetines registrados"
                 android:textSize="14sp"/>
 
             <Button
@@ -78,107 +78,21 @@
                 android:backgroundTint="@color/wine"
                 android:layout_marginBottom="16dp"/>
 
-            <!-- CARD LOCAL -->
-            <androidx.cardview.widget.CardView
-                android:id="@+id/cardLocal1"
+            <TextView
+                android:id="@+id/tvLocalesAdminVacios"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
+                android:text="No hay locales registrados."
+                android:textAlignment="center"
+                android:textColor="#555555"
+                android:textSize="14sp"
+                android:visibility="gone" />
 
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp">
-
-                <LinearLayout
-                    android:id="@+id/local1"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:orientation="horizontal"
-                    android:padding="12dp">
-
-                    <!-- Imagen -->
-                    <ImageView
-                        android:id="@+id/imgLocal"
-                        android:layout_width="100dp"
-                        android:layout_height="80dp"
-                        tools:src="@drawable/logo_ues" />
-
-                    <!-- Contenido derecho -->
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:paddingStart="12dp">
-
-                        <!-- Nombre -->
-                        <TextView
-                            android:id="@+id/tvNombreLocal"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Cafetín Central"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
-
-                        <!-- Ubicación -->
-                        <TextView
-                            android:id="@+id/tvUbicacion"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:text="Ubicación: Plaza central"
-                            android:textSize="13sp" />
-
-                        <!-- Estado -->
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:orientation="horizontal">
-
-                            <View
-                                android:layout_width="8dp"
-                                android:layout_height="8dp"
-                                android:layout_marginEnd="6dp"
-                                android:background="@android:color/holo_green_dark" />
-
-                            <TextView
-                                android:id="@+id/tvEstado"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Estado: Activo"
-                                android:textSize="13sp" />
-
-                        </LinearLayout>
-
-                        <!-- Ver menú -->
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp"
-                            android:orientation="horizontal">
-
-                            <Button
-                                android:id="@+id/btnEditar"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Editar"
-                                android:backgroundTint="@color/wine"/>
-                            <Button
-                                android:id="@+id/btnEliminar"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Eliminar"
-                                android:backgroundTint="#CCCCCC"/>
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-            </androidx.cardview.widget.CardView>
+            <LinearLayout
+                android:id="@+id/contenedorLocalesAdmin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
 
         </LinearLayout>
 

@@ -29,6 +29,7 @@
             android:src="@drawable/ic_arrow_back"/>
 
         <TextView
+            android:id="@+id/tvTituloFormularioLocal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -65,6 +66,7 @@
 
             <!-- Campo: Nombre del local -->
             <EditText
+                android:id="@+id/etNombreLocal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -77,6 +79,7 @@
 
             <!-- Campo: Ubicación -->
             <EditText
+                android:id="@+id/etUbicacionLocal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
@@ -89,6 +92,7 @@
 
             <!-- Campo: Descripción -->
             <EditText
+                android:id="@+id/etDescripcionLocal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="14dp"

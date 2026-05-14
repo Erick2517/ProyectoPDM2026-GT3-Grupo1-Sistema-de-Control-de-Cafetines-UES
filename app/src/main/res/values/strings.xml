@@ -11,11 +11,19 @@
         <item>Local Ingeniería</item>
     </string-array>
     <string-array name="estados_local">
-        <item>Local Central</item>
-        <item>Local Ingeniería</item>
+        <item>Activo</item>
+        <item>Inactivo</item>
     </string-array>
     <string-array name="tipos_prod">
+        <item>Normal</item>
         <item>Antojito</item>
         <item>Desayuno</item>
+        <item>Almuerzo</item>
+        <item>Bebida</item>
+        <item>Refrigerio</item>
+    </string-array>
+    <string-array name="disponibilidad_producto">
+        <item>Disponible</item>
+        <item>No disponible</item>
     </string-array>
 </resources>
