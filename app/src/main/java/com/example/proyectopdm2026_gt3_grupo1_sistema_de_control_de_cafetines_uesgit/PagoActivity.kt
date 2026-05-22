@@ -23,6 +23,7 @@ import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_ue
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.AppConstants
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.DateUtils
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
+import java.util.Calendar
 import java.util.Locale
 
 class PagoActivity : AppCompatActivity() {
@@ -139,6 +140,27 @@ class PagoActivity : AppCompatActivity() {
         }
 
         val monto = findViewById<EditText>(R.id.txtMontoPago).text.toString().trim().toDoubleOrNull()
+
+        // 1. VALIDACIÓN DE MONTO MÍNIMO
+        if (monto == null || monto <= 0.05) { // Evita montos vacíos, en cero o negativos
+            mostrarMensaje("El monto ingresado debe ser mayor a $0.05")
+            return
+        }
+
+        // 2. VALIDACIÓN DE HORARIO DE ANTOJITOS (2:00 p.m. a 4:00 p.m.)
+       /* val horaActual = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        if (horaActual < 14 || horaActual >= 16) {
+            mostrarMensaje("Los antojitos solo se pueden pagar entre las 2:00 p.m. y las 4:00 p.m.")
+            return
+        }*/
+
+        // 3. VALIDACIÓN DE CANTIDAD MÁXIMA (Máximo 3 unidades en total)
+        val totalUnidades = 1
+        if (totalUnidades > 3) {
+            mostrarMensaje("Solo puedes pedir un máximo de 3 antojitos.")
+            return
+        }
+
         val errorValidacion = PagoValidator.validarPago(
             idPedido = pedido.idPedido,
             metodoPago = metodoPagoSeleccionado,
@@ -149,6 +171,83 @@ class PagoActivity : AppCompatActivity() {
             mostrarMensaje(errorValidacion)
             return
         }
+
+        when (metodoPagoSeleccionado) {
+            AppConstants.METODO_PAGO_EFECTIVO -> {
+                ejecutarGuardadoRealEnBase(monto)
+            }
+            AppConstants.METODO_PAGO_TARJETA -> {
+                mostrarDialogoTarjetaSimulado(monto)
+            }
+            AppConstants.METODO_PAGO_BITCOIN -> {
+                mostrarDialogoBitcoinSimulado(monto)
+            }
+        }
+    }
+
+    private fun mostrarDialogoTarjetaSimulado(monto: Double?) {
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        builder.setTitle("Pago con Tarjeta Crédito/Débito")
+
+        val contenedor = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding(50, 40, 50, 10)
+        }
+
+        val inputTarjeta = EditText(this).apply { hint = "Número de Tarjeta (16 dígitos)" }
+        val inputVencimiento = EditText(this).apply { hint = "MM/AA" }
+        val inputCVV = EditText(this).apply { hint = "CVV (3 dígitos)" }
+
+        contenedor.addView(inputTarjeta)
+        contenedor.addView(inputVencimiento)
+        contenedor.addView(inputCVV)
+        builder.setView(contenedor)
+
+        builder.setPositiveButton("Proceder Pago") { dialog, _ ->
+            if (inputTarjeta.text.toString().length < 16 || inputCVV.text.toString().length < 3) {
+                mostrarMensaje("Datos de tarjeta inválidos. Simulación cancelada.")
+            } else {
+                dialog.dismiss()
+                ejecutarGuardadoRealEnBase(monto)
+            }
+        }
+        builder.setNegativeButton("Cancelar", null)
+        builder.show()
+    }
+
+    private fun mostrarDialogoBitcoinSimulado(monto: Double?) {
+        val builder = androidx.appcompat.app.AlertDialog.Builder(this)
+        builder.setTitle("Pago con Bitcoin (Simulado)")
+
+        val contenedor = android.widget.LinearLayout(this).apply {
+            orientation = android.widget.LinearLayout.VERTICAL
+            setPadding(50, 40, 50, 10)
+        }
+
+        val txtWalletIndicacion = TextView(this).apply {
+            text = "Transfiere el equivalente a la siguiente dirección de la Wallet del Cafetín UES:\n\nbc1qxy2kgdygjrsqtzq2n0yrf249"
+            textSize = 14f
+        }
+        val inputTransaccion = EditText(this).apply { hint = "ID de Transacción / Hash simulado" }
+
+        contenedor.addView(txtWalletIndicacion)
+        contenedor.addView(inputTransaccion)
+        builder.setView(contenedor)
+
+        builder.setPositiveButton("Verificar Transferencia") { dialog, _ ->
+            if (inputTransaccion.text.toString().isEmpty()) {
+                mostrarMensaje("Debe ingresar el hash de la transacción simulada.")
+            } else {
+                dialog.dismiss()
+                ejecutarGuardadoRealEnBase(monto)
+            }
+        }
+        builder.setNegativeButton("Cancelar", null)
+        builder.show()
+    }
+
+    private fun ejecutarGuardadoRealEnBase(monto: Double?) {
+        val pedido = pedidoActual ?: return
 
         val pago = Pago(
             idPedido = pedido.idPedido,
