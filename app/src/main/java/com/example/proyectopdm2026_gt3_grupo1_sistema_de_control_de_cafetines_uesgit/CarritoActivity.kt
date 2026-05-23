@@ -29,7 +29,7 @@ import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_ue
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.SessionManager
 import java.util.Locale
-
+import androidx.appcompat.app.AlertDialog
 class CarritoActivity : AppCompatActivity() {
     private lateinit var pedidoRepository: PedidoRepository
     private lateinit var sessionManager: SessionManager
@@ -293,7 +293,14 @@ class CarritoActivity : AppCompatActivity() {
             is OperationResult.Success -> {
                 CarritoManager.vaciarCarrito()
                 mostrarMensaje("Pedido registrado correctamente.")
-                abrirPantallaPago(resultado.data)
+                if(tipoPedido == AppConstants.TIPO_PEDIDO_RESERVA){
+                    mostrarModalReserva(resultado.data)
+                    return
+                }
+                else{
+                    abrirPantallaPago(resultado.data)
+                }
+
             }
         }
     }
@@ -359,6 +366,12 @@ class CarritoActivity : AppCompatActivity() {
         startActivity(intent)
         finish()
     }
+    private fun abrirPantallaBienvenida() {
+        // Reemplaza "BienvenidaActivity" por el nombre exacto de tu clase
+        val intent = Intent(this, BienvenidaActivity::class.java)
+        startActivity(intent)
+        finish() // Cierra la actividad actual para que el usuario no pueda regresar con el botón atrás
+    }
 
     private fun formatearPrecio(precio: Double): String {
         return String.format(Locale.US, "$%.2f", precio)
@@ -370,5 +383,16 @@ class CarritoActivity : AppCompatActivity() {
 
     private fun dpToPx(value: Int): Int {
         return (value * resources.displayMetrics.density).toInt()
+    }
+    private fun mostrarModalReserva(idPedido: Long) {
+        AlertDialog.Builder(this)
+            .setTitle("¡Reserva Confirmada!")
+            .setMessage("Tu pedido ha sido registrado como reserva.\n\nCódigo de pedido: #$idPedido")
+            .setCancelable(false) // Evita que el usuario lo cierre tocando fuera del modal
+            .setPositiveButton("Aceptar") { dialog, _ ->
+                dialog.dismiss() // Cierra el modal
+                abrirPantallaBienvenida() // Redirige a la bienvenida sin parámetros
+            }
+            .show()
     }
 }
