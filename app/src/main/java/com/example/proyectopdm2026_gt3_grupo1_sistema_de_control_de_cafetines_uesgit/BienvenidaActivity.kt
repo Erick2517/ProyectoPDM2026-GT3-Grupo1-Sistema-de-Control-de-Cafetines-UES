@@ -5,27 +5,35 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.database.AppDatabaseHelper
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.datasource.LocalLocalDataSource
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.datasource.OpcionMenuLocalDataSource
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.repository.LocalRepository
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.repository.PermisoRepository
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Local
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.AppConstants
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.SessionManager
 
 class BienvenidaActivity : AppCompatActivity() {
     private lateinit var permisoRepository: PermisoRepository
+    private lateinit var localRepository: LocalRepository
     private lateinit var sessionManager: SessionManager
+    private var locales: List<Local> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_bienvenida)
         configurarDependencias()
+        configurarSaludo()
+        cargarLocales()
         aplicarPermisosMenu()
 
         val btnLogOut = findViewById<Button>(R.id.btnCerrarSesion)
@@ -73,33 +81,17 @@ class BienvenidaActivity : AppCompatActivity() {
         }
 
         btnLocalCentral.setOnClickListener {
-            val intent = Intent(
-                this,
-                ProductosActivity::class.java
-            )
-            startActivity(intent)
+            abrirProductosPorNombre("Cafetín Central")
         }
         btnLocalIng.setOnClickListener {
-            val intent = Intent(
-                this,
-                ProductosActivity::class.java
-            )
-            startActivity(intent)
+            abrirProductosPorNombre("Cafetín Ingeniería")
         }
 
         local1.setOnClickListener {
-            val intent = Intent(
-                this,
-                ProductosActivity::class.java
-            )
-            startActivity(intent)
+            abrirProductosPorNombre("Cafetín Central")
         }
         local2.setOnClickListener {
-            val intent = Intent(
-                this,
-                ProductosActivity::class.java
-            )
-            startActivity(intent)
+            abrirProductosPorNombre("Cafetín Ingeniería")
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -112,7 +104,36 @@ class BienvenidaActivity : AppCompatActivity() {
     private fun configurarDependencias() {
         val databaseHelper = AppDatabaseHelper(this)
         permisoRepository = PermisoRepository(OpcionMenuLocalDataSource(databaseHelper))
+        localRepository = LocalRepository(LocalLocalDataSource(databaseHelper))
         sessionManager = SessionManager(this)
+    }
+
+    private fun configurarSaludo() {
+        val nombreUsuario = sessionManager.obtenerNombreUsuario().orEmpty().ifBlank { "Usuario" }
+        val primerNombre = nombreUsuario.substringBefore(" ")
+        findViewById<TextView>(R.id.tvSaludo).text = "Hola, $primerNombre"
+    }
+
+    private fun cargarLocales() {
+        when (val resultado = localRepository.obtenerLocalesActivos()) {
+            is OperationResult.Error -> mostrarMensaje(resultado.message)
+            is OperationResult.Success -> locales = resultado.data
+        }
+    }
+
+    private fun abrirProductosPorNombre(nombreLocal: String) {
+        val local = locales.firstOrNull { it.nombreLocal == nombreLocal }
+        if (local == null) {
+            mostrarMensaje("No se encontró el local seleccionado.")
+            startActivity(Intent(this, LocalesActivity::class.java))
+            return
+        }
+
+        val intent = Intent(this, ProductosActivity::class.java).apply {
+            putExtra(AppConstants.EXTRA_ID_LOCAL, local.idLocal)
+            putExtra(AppConstants.EXTRA_NOMBRE_LOCAL, local.nombreLocal)
+        }
+        startActivity(intent)
     }
 
     private fun aplicarPermisosMenu() {

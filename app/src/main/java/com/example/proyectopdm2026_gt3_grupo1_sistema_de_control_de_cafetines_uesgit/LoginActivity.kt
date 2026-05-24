@@ -93,6 +93,7 @@ class LoginActivity : AppCompatActivity() {
                 val nombreRol = resultadoRol.data
                 sessionManager.guardarSesion(
                     idUsuario = usuario.idUsuario,
+                    nombreUsuario = usuario.nombre,
                     idRol = usuario.idRol,
                     nombreRol = nombreRol,
                     idUbicacion = usuario.idUbicacion,

@@ -7,6 +7,7 @@ class SessionManager(context: Context) {
 
     fun guardarSesion(
         idUsuario: Int,
+        nombreUsuario: String,
         idRol: Int,
         nombreRol: String,
         idUbicacion: Int? = null,
@@ -14,6 +15,7 @@ class SessionManager(context: Context) {
     ) {
         preferences.edit()
             .putInt(KEY_ID_USUARIO, idUsuario)
+            .putString(KEY_NOMBRE_USUARIO, nombreUsuario)
             .putInt(KEY_ID_ROL, idRol)
             .putString(KEY_NOMBRE_ROL, nombreRol)
             .putInt(KEY_ID_UBICACION, idUbicacion ?: 0)
@@ -32,6 +34,10 @@ class SessionManager(context: Context) {
 
     fun obtenerIdUsuario(): Int {
         return preferences.getInt(KEY_ID_USUARIO, 0)
+    }
+
+    fun obtenerNombreUsuario(): String? {
+        return preferences.getString(KEY_NOMBRE_USUARIO, null)
     }
 
     fun obtenerIdRol(): Int {
@@ -55,6 +61,7 @@ class SessionManager(context: Context) {
     private companion object {
         const val PREFERENCES_NAME = "cafetines_session"
         const val KEY_ID_USUARIO = "id_usuario"
+        const val KEY_NOMBRE_USUARIO = "nombre_usuario"
         const val KEY_ID_ROL = "id_rol"
         const val KEY_NOMBRE_ROL = "nombre_rol"
         const val KEY_ID_UBICACION = "id_ubicacion"
