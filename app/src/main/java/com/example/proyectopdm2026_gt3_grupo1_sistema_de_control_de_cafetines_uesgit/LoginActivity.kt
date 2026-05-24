@@ -33,19 +33,9 @@ class LoginActivity : AppCompatActivity() {
 
         val btnLogin = findViewById<Button>(R.id.btnLogin)
         val lblRegistrarse = findViewById<TextView>(R.id.lbl_registrarse)
-        val btnAdmin = findViewById<Button>(R.id.btnAdmin)
-        val btnEncargado = findViewById<Button>(R.id.btnEncargado)
 
         btnLogin.setOnClickListener {
             iniciarSesion()
-        }
-
-        btnAdmin.setOnClickListener {
-            mostrarMensaje("Ingrese con una cuenta administradora para acceder.")
-        }
-
-        btnEncargado.setOnClickListener {
-            mostrarMensaje("Ingrese con una cuenta de encargado para acceder.")
         }
 
         lblRegistrarse.setOnClickListener {
