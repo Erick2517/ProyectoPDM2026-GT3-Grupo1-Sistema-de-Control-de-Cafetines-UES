@@ -97,19 +97,23 @@ class LoginActivity : AppCompatActivity() {
                     nombreRol = nombreRol,
                     idUbicacion = usuario.idUbicacion
                 )
-                navegarSegunRol(nombreRol)
+                navegarSegunRol(nombreRol, usuario)
             }
         }
     }
 
-    private fun navegarSegunRol(nombreRol: String) {
+    private fun navegarSegunRol(nombreRol: String, usuario: Usuario) {
         val destino = when (nombreRol) {
             AppConstants.ROL_ADMINISTRADOR -> PanelAdminActivity::class.java
             AppConstants.ROL_ENCARGADO -> PanelEncargadoActivity::class.java
             else -> BienvenidaActivity::class.java
         }
 
-        startActivity(Intent(this, destino))
+        val intent = Intent(this, destino)
+
+        intent.putExtra("usuario", usuario.nombre)
+
+        startActivity(intent)
         finish()
     }
 

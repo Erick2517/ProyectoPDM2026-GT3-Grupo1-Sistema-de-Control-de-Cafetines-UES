@@ -25,6 +25,11 @@ class BienvenidaActivity : AppCompatActivity() {
         val btnLocalIng = findViewById<Button>(R.id.btnLocalIngenieria)
         val local1 = findViewById<LinearLayout>(R.id.local1)
         val local2 = findViewById<LinearLayout>(R.id.local2)
+        val tvSaludo = findViewById<TextView>(R.id.tvSaludo)
+
+        val usuario = intent.getStringExtra("usuario")
+
+        tvSaludo.text = "Hola, $usuario"
 
         btnLogOut.setOnClickListener {
             val intent = Intent(
