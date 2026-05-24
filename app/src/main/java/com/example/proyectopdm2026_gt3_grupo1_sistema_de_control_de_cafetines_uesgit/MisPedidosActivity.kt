@@ -153,6 +153,40 @@ class MisPedidosActivity : AppCompatActivity() {
         val detalle = crearBotonDetalle(pedido.idPedido)
 
         fila.addView(total)
+        if (pedido.estadoPedido.equals(AppConstants.ESTADO_PEDIDO_PENDIENTE_PAGO, ignoreCase = true) ||
+            pedido.estadoPedido.equals(AppConstants.ESTADO_PEDIDO_PENDIENTE, ignoreCase = true)) {
+
+            val botonPagar = TextView(this).apply {
+                text = "Pagar"
+                textSize = 12f
+                setTextColor(getColor(android.R.color.white))
+                setBackgroundResource(R.drawable.bg_badge_orange) // Tu fondo naranja
+                setPadding(dpToPx(14), dpToPx(5), dpToPx(14), dpToPx(5))
+
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    rightMargin = dpToPx(8) // Espacio para que no se pegue al botón detalle
+                }
+
+                setOnClickListener {
+                    // Creamos el Intent para abrir PagoActivity
+                    val intent = Intent(this@MisPedidosActivity, PagoActivity::class.java).apply {
+                        // 1. Usamos la constante exacta y lo convertimos a Long (.toLong())
+                        putExtra(AppConstants.EXTRA_ID_PEDIDO, pedido.idPedido.toLong())
+
+                        // 2. Pasamos el total
+                        putExtra("EXTRA_TOTAL_PAGAR", pedido.total)
+
+                        putExtra("VIENE_DE_MIS_PEDIDOS", true)
+                    }
+                    startActivity(intent)
+                }
+            }
+            fila.addView(botonPagar) // Lo agregamos a la fila
+        }
+
         fila.addView(detalle)
         return fila
     }

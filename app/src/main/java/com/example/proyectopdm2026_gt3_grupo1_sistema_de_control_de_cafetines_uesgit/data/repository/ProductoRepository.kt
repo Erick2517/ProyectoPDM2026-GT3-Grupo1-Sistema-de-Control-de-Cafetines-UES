@@ -82,4 +82,13 @@ class ProductoRepository(private val productoLocalDataSource: ProductoLocalDataS
 
         return actualizarProducto(producto.copy(disponibilidad = nuevaDisponibilidad))
     }
+    fun obtenerProductosDisponiblesPorLocal(idLocal: Int): OperationResult<List<Producto>> {
+        return try {
+            // Invocamos el método del DataSource que ya filtra disponibilidad y stock > 0
+            val productos = productoLocalDataSource.obtenerProductosDisponiblesPorLocal(idLocal)
+            OperationResult.Success(productos)
+        } catch (exception: Exception) {
+            OperationResult.Error("Ocurrió un error al consultar productos disponibles.", exception)
+        }
+    }
 }
