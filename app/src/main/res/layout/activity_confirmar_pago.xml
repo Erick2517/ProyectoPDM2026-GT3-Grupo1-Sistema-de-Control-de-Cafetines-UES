@@ -83,13 +83,14 @@
 
             <!-- Número de pedido -->
             <TextView
+                android:id="@+id/txtNumPeido"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:text="Pedido #004"
-                android:textSize="16sp"
-                android:textStyle="bold"
                 android:textColor="#111111"
-                android:layout_marginBottom="8dp" />
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <!-- Estado con badge verde -->
             <LinearLayout
@@ -107,34 +108,66 @@
                     android:textColor="#555555" />
 
                 <TextView
+                    android:id="@+id/tvEstado"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pagado/Confirmado"
-                    android:textSize="12sp"
-                    android:textColor="#FFFFFF"
                     android:background="@drawable/bg_badge_green"
                     android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
                     android:paddingTop="3dp"
-                    android:paddingBottom="3dp" />
+                    android:paddingEnd="10dp"
+                    android:paddingBottom="3dp"
+                    android:text="Pagado/Confirmado"
+                    android:textColor="#FFFFFF"
+                    android:textSize="12sp" />
             </LinearLayout>
 
-            <!-- Método de pago -->
-            <TextView
-                android:layout_width="wrap_content"
+            <!-- Método de pago alineado en horizontal -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="6dp"
-                android:textSize="13sp"
-                android:textColor="#555555"
-                android:text="Metodo de pago: Tajeta"/>
+                android:orientation="horizontal"
+                android:layout_marginBottom="6dp">
 
-            <!-- Total pagado -->
-            <TextView
-                android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Método de pago: "
+                    android:textColor="#555555"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/txtMetodoPago"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#111111"
+                    android:textStyle="bold"
+                    android:textSize="13sp"
+                    tools:text="Tarjeta de Crédito" />
+            </LinearLayout>
+
+            <!-- Total pagado alineado en horizontal -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="13sp"
-                android:textColor="#555555"
-                android:text="Total Pagado $3.00" />
+                android:orientation="horizontal"
+                android:layout_marginBottom="6dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Total Pagado: $"
+                    android:textColor="#555555"
+                    android:textSize="13sp" />
+
+                <TextView
+                    android:id="@+id/txtTotalPagado"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#111111"
+                    android:textStyle="bold"
+                    android:textSize="13sp"
+                    tools:text="45.00" />
+            </LinearLayout>
 
         </LinearLayout>
     </androidx.cardview.widget.CardView>

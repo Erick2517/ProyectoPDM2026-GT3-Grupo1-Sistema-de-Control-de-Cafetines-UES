@@ -260,7 +260,7 @@ class PagoActivity : AppCompatActivity() {
 
         when (val resultado = pagoRepository.registrarPagoConfirmado(pago)) {
             is OperationResult.Error -> mostrarMensaje(resultado.message)
-            is OperationResult.Success -> abrirConfirmacionPago()
+            is OperationResult.Success -> abrirConfirmacionPago(resultado.data)
         }
     }
 
@@ -272,8 +272,10 @@ class PagoActivity : AppCompatActivity() {
         }
     }
 
-    private fun abrirConfirmacionPago() {
-        val intent = Intent(this, ConfirmarPagoActivity::class.java)
+    private fun abrirConfirmacionPago(idPago: Long) {
+        val intent = Intent(this, ConfirmarPagoActivity::class.java).apply {
+            putExtra(AppConstants.ID_PAGO, idPago)
+        }
         startActivity(intent)
         finish()
     }

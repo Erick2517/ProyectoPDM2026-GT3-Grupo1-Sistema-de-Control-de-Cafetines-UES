@@ -5,6 +5,7 @@ import android.database.Cursor
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.database.AppDatabaseHelper
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.database.DatabaseContract
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Pago
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Pedido
 
 class PagoLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
     fun insertarPago(pago: Pago): Long {
@@ -50,7 +51,22 @@ class PagoLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
             db.endTransaction()
         }
     }
+    fun obtenerPagoPorId(idPago: Int): Pago? {
+        val cursor = databaseHelper.readableDatabase.query(
+            DatabaseContract.Pagos.TABLE_NAME,
+            null,
+            "${DatabaseContract.Pagos.ID_PAGO} = ?",
+            arrayOf(idPago.toString()),
+            null,
+            null,
+            null,
+            "1"
+        )
 
+        cursor.use {
+            return if (it.moveToFirst()) it.toPago() else null
+        }
+    }
     fun obtenerPagosPorPedido(idPedido: Int): List<Pago> {
         val pagos = mutableListOf<Pago>()
         val cursor = databaseHelper.readableDatabase.query(
