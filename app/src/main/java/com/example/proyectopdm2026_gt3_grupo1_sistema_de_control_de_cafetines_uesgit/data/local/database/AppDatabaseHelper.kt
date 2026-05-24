@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.AppConstants
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.PasswordHasher
 
 class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
@@ -15,17 +16,21 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(CREATE_ROLES_TABLE)
         db.execSQL(CREATE_UBICACIONES_TABLE)
-        db.execSQL(CREATE_USUARIOS_TABLE)
         db.execSQL(CREATE_LOCALES_TABLE)
+        db.execSQL(CREATE_USUARIOS_TABLE)
         db.execSQL(CREATE_PRODUCTOS_TABLE)
         db.execSQL(CREATE_PEDIDOS_TABLE)
         db.execSQL(CREATE_DETALLE_PEDIDO_TABLE)
         db.execSQL(CREATE_PAGOS_TABLE)
         db.execSQL(CREATE_PEDIDOS_ESPECIALES_TABLE)
+        db.execSQL(CREATE_OPCIONES_MENU_TABLE)
+        db.execSQL(CREATE_ROLES_OPCIONES_MENU_TABLE)
         insertarRolesBase(db)
         insertarUbicacionesBase(db)
-        insertarUsuariosBase(db)
         insertarCatalogoBase(db)
+        insertarUsuariosBase(db)
+        insertarOpcionesMenuBase(db)
+        insertarPermisosMenuBase(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -39,6 +44,22 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
 
         if (oldVersion < 4) {
             insertarUsuariosBase(db)
+        }
+
+        if (oldVersion < 5) {
+            db.execSQL(CREATE_OPCIONES_MENU_TABLE)
+            db.execSQL(CREATE_ROLES_OPCIONES_MENU_TABLE)
+            insertarOpcionesMenuBase(db)
+            insertarPermisosMenuBase(db)
+        }
+
+        if (oldVersion < 6) {
+            db.execSQL(
+                "ALTER TABLE ${DatabaseContract.Usuarios.TABLE_NAME} " +
+                    "ADD COLUMN ${DatabaseContract.Usuarios.ID_LOCAL_ASIGNADO} INTEGER " +
+                    "REFERENCES ${DatabaseContract.Locales.TABLE_NAME}(${DatabaseContract.Locales.ID_LOCAL})"
+            )
+            asignarLocalBaseAEncargado(db)
         }
     }
 
@@ -73,6 +94,7 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
         val idRolAdmin = obtenerIdRolPorNombre(db, "Administrador")
         val idRolEncargado = obtenerIdRolPorNombre(db, "Encargado")
         val idUbicacion = obtenerIdUbicacionPorNombre(db, "Campus Central")
+        val idLocalCentral = obtenerIdLocalPorNombre(db, "Cafetín Central")
 
         if (idRolAdmin != null) {
             insertarUsuarioBase(
@@ -82,7 +104,8 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
                 password = "Admin123",
                 carnet = "AD00001",
                 idRol = idRolAdmin,
-                idUbicacion = idUbicacion
+                idUbicacion = idUbicacion,
+                idLocalAsignado = null
             )
         }
 
@@ -94,7 +117,8 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
                 password = "Encargado123",
                 carnet = "EN00001",
                 idRol = idRolEncargado,
-                idUbicacion = idUbicacion
+                idUbicacion = idUbicacion,
+                idLocalAsignado = idLocalCentral
             )
         }
     }
@@ -126,6 +150,105 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
 
         if (contarRegistros(db, DatabaseContract.Productos.TABLE_NAME) == 0) {
             insertarProductosBase(db)
+        }
+    }
+
+    private fun insertarOpcionesMenuBase(db: SQLiteDatabase) {
+        insertarOpcionMenuBase(
+            db,
+            AppConstants.OPCION_VER_LOCALES,
+            "Permite consultar cafetines activos y sus productos."
+        )
+        insertarOpcionMenuBase(
+            db,
+            AppConstants.OPCION_MIS_PEDIDOS,
+            "Permite consultar historial y detalle de pedidos propios."
+        )
+        insertarOpcionMenuBase(
+            db,
+            AppConstants.OPCION_PEDIDO_ESPECIAL,
+            "Permite solicitar pedidos especiales para eventos."
+        )
+        insertarOpcionMenuBase(
+            db,
+            AppConstants.OPCION_GESTIONAR_LOCALES,
+            "Permite administrar locales o cafetines."
+        )
+        insertarOpcionMenuBase(
+            db,
+            AppConstants.OPCION_GESTIONAR_PRODUCTOS,
+            "Permite administrar productos, precios, stock y disponibilidad."
+        )
+        insertarOpcionMenuBase(
+            db,
+            AppConstants.OPCION_GESTIONAR_USUARIOS,
+            "Permite administrar usuarios y roles."
+        )
+        insertarOpcionMenuBase(
+            db,
+            AppConstants.OPCION_CONTROL_PEDIDOS,
+            "Permite consultar y actualizar estados de pedidos."
+        )
+    }
+
+    private fun insertarPermisosMenuBase(db: SQLiteDatabase) {
+        asignarOpcionesRol(
+            db,
+            AppConstants.ROL_USUARIO,
+            listOf(
+                AppConstants.OPCION_VER_LOCALES,
+                AppConstants.OPCION_MIS_PEDIDOS,
+                AppConstants.OPCION_PEDIDO_ESPECIAL
+            )
+        )
+        asignarOpcionesRol(
+            db,
+            AppConstants.ROL_ADMINISTRADOR,
+            listOf(
+                AppConstants.OPCION_GESTIONAR_LOCALES,
+                AppConstants.OPCION_GESTIONAR_PRODUCTOS,
+                AppConstants.OPCION_GESTIONAR_USUARIOS,
+                AppConstants.OPCION_CONTROL_PEDIDOS
+            )
+        )
+        asignarOpcionesRol(
+            db,
+            AppConstants.ROL_ENCARGADO,
+            listOf(
+                AppConstants.OPCION_GESTIONAR_PRODUCTOS,
+                AppConstants.OPCION_CONTROL_PEDIDOS
+            )
+        )
+    }
+
+    private fun insertarOpcionMenuBase(db: SQLiteDatabase, nombre: String, descripcion: String) {
+        val values = ContentValues().apply {
+            put(DatabaseContract.OpcionesMenu.NOMBRE_OPCION, nombre)
+            put(DatabaseContract.OpcionesMenu.DESCRIPCION_OPCION, descripcion)
+            put(DatabaseContract.OpcionesMenu.ESTADO, AppConstants.ESTADO_ACTIVO)
+        }
+        db.insertWithOnConflict(
+            DatabaseContract.OpcionesMenu.TABLE_NAME,
+            null,
+            values,
+            SQLiteDatabase.CONFLICT_IGNORE
+        )
+    }
+
+    private fun asignarOpcionesRol(db: SQLiteDatabase, nombreRol: String, opciones: List<String>) {
+        val idRol = obtenerIdRolPorNombre(db, nombreRol) ?: return
+        opciones.forEach { nombreOpcion ->
+            val idOpcion = obtenerIdOpcionPorNombre(db, nombreOpcion) ?: return@forEach
+            val values = ContentValues().apply {
+                put(DatabaseContract.RolesOpcionesMenu.ID_ROL, idRol)
+                put(DatabaseContract.RolesOpcionesMenu.ID_OPCION, idOpcion)
+            }
+            db.insertWithOnConflict(
+                DatabaseContract.RolesOpcionesMenu.TABLE_NAME,
+                null,
+                values,
+                SQLiteDatabase.CONFLICT_IGNORE
+            )
         }
     }
 
@@ -196,7 +319,8 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
         password: String,
         carnet: String,
         idRol: Int,
-        idUbicacion: Int?
+        idUbicacion: Int?,
+        idLocalAsignado: Int?
     ) {
         val values = ContentValues().apply {
             put(DatabaseContract.Usuarios.NOMBRE, nombre)
@@ -205,6 +329,7 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
             put(DatabaseContract.Usuarios.CARNET, carnet)
             put(DatabaseContract.Usuarios.ID_ROL, idRol)
             put(DatabaseContract.Usuarios.ID_UBICACION, idUbicacion)
+            put(DatabaseContract.Usuarios.ID_LOCAL_ASIGNADO, idLocalAsignado)
             put(DatabaseContract.Usuarios.ACTIVO, 1)
         }
         db.insertWithOnConflict(
@@ -212,6 +337,20 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
             null,
             values,
             SQLiteDatabase.CONFLICT_IGNORE
+        )
+    }
+
+    private fun asignarLocalBaseAEncargado(db: SQLiteDatabase) {
+        val idRolEncargado = obtenerIdRolPorNombre(db, AppConstants.ROL_ENCARGADO) ?: return
+        val idLocalCentral = obtenerIdLocalPorNombre(db, "Cafetín Central") ?: return
+        val values = ContentValues().apply {
+            put(DatabaseContract.Usuarios.ID_LOCAL_ASIGNADO, idLocalCentral)
+        }
+        db.update(
+            DatabaseContract.Usuarios.TABLE_NAME,
+            values,
+            "${DatabaseContract.Usuarios.ID_ROL} = ? AND ${DatabaseContract.Usuarios.ID_LOCAL_ASIGNADO} IS NULL",
+            arrayOf(idRolEncargado.toString())
         )
     }
 
@@ -273,6 +412,23 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
         }
     }
 
+    private fun obtenerIdOpcionPorNombre(db: SQLiteDatabase, nombreOpcion: String): Int? {
+        val cursor = db.query(
+            DatabaseContract.OpcionesMenu.TABLE_NAME,
+            arrayOf(DatabaseContract.OpcionesMenu.ID_OPCION),
+            "${DatabaseContract.OpcionesMenu.NOMBRE_OPCION} = ?",
+            arrayOf(nombreOpcion),
+            null,
+            null,
+            null,
+            "1"
+        )
+
+        cursor.use {
+            return if (it.moveToFirst()) it.getInt(0) else null
+        }
+    }
+
     private companion object {
         const val CREATE_ROLES_TABLE = """
             CREATE TABLE Roles (
@@ -298,9 +454,11 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
                 carnet TEXT NOT NULL UNIQUE,
                 id_rol INTEGER NOT NULL,
                 id_ubicacion INTEGER,
+                id_local_asignado INTEGER,
                 activo INTEGER NOT NULL DEFAULT 1,
                 FOREIGN KEY (id_rol) REFERENCES Roles(id_rol),
-                FOREIGN KEY (id_ubicacion) REFERENCES Ubicaciones(id_ubicacion)
+                FOREIGN KEY (id_ubicacion) REFERENCES Ubicaciones(id_ubicacion),
+                FOREIGN KEY (id_local_asignado) REFERENCES Locales(id_local)
             )
         """
 
@@ -380,6 +538,26 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
                 anticipo REAL NOT NULL,
                 referencia_pago TEXT,
                 FOREIGN KEY (id_pedido) REFERENCES Pedidos(id_pedido)
+            )
+        """
+
+        const val CREATE_OPCIONES_MENU_TABLE = """
+            CREATE TABLE IF NOT EXISTS OpcionesMenu (
+                id_opcion INTEGER PRIMARY KEY AUTOINCREMENT,
+                nombre_opcion TEXT NOT NULL UNIQUE,
+                descripcion_opcion TEXT,
+                estado TEXT NOT NULL
+            )
+        """
+
+        const val CREATE_ROLES_OPCIONES_MENU_TABLE = """
+            CREATE TABLE IF NOT EXISTS Roles_OpcionesMenu (
+                id_rol_opcion INTEGER PRIMARY KEY AUTOINCREMENT,
+                id_rol INTEGER NOT NULL,
+                id_opcion INTEGER NOT NULL,
+                UNIQUE (id_rol, id_opcion),
+                FOREIGN KEY (id_rol) REFERENCES Roles(id_rol),
+                FOREIGN KEY (id_opcion) REFERENCES OpcionesMenu(id_opcion)
             )
         """
     }

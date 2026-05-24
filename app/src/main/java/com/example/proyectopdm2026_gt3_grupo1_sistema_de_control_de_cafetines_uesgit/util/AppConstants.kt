@@ -29,6 +29,14 @@ object AppConstants {
     const val METODO_PAGO_TARJETA = "Tarjeta"
     const val METODO_PAGO_BITCOIN = "Bitcoin"
 
+    const val OPCION_VER_LOCALES = "Ver locales"
+    const val OPCION_MIS_PEDIDOS = "Mis pedidos"
+    const val OPCION_PEDIDO_ESPECIAL = "Pedido especial"
+    const val OPCION_GESTIONAR_LOCALES = "Gestión de locales"
+    const val OPCION_GESTIONAR_PRODUCTOS = "Gestión de productos"
+    const val OPCION_GESTIONAR_USUARIOS = "Gestión de usuarios"
+    const val OPCION_CONTROL_PEDIDOS = "Control de pedidos"
+
     const val ESTADO_PAGO_REGISTRADO = "Registrado"
     const val ESTADO_PAGO_CONFIRMADO = "Confirmado"
     const val ESTADO_PAGO_RECHAZADO = "Rechazado"

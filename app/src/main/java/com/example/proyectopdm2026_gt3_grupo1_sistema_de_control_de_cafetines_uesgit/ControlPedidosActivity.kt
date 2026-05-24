@@ -31,12 +31,14 @@ import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_ue
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Producto
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.AppConstants
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.SessionManager
 import java.util.Locale
 
 class ControlPedidosActivity : AppCompatActivity() {
     private lateinit var pedidoRepository: PedidoRepository
     private lateinit var productoRepository: ProductoRepository
     private lateinit var localRepository: LocalRepository
+    private lateinit var sessionManager: SessionManager
     private var locales: List<Local> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,6 +70,7 @@ class ControlPedidosActivity : AppCompatActivity() {
         pedidoRepository = PedidoRepository(PedidoLocalDataSource(databaseHelper))
         productoRepository = ProductoRepository(ProductoLocalDataSource(databaseHelper))
         localRepository = LocalRepository(LocalLocalDataSource(databaseHelper))
+        sessionManager = SessionManager(this)
     }
 
     private fun cargarLocales() {
@@ -75,11 +78,17 @@ class ControlPedidosActivity : AppCompatActivity() {
             is OperationResult.Error -> mostrarMensaje(resultado.message)
             is OperationResult.Success -> {
                 locales = resultado.data
-                val nombresLocales = listOf("Todos los locales") + locales.map { it.nombreLocal }
+                val idLocalEncargado = obtenerIdLocalAsignadoEncargado()
+                val nombresLocales = if (idLocalEncargado != null) {
+                    listOf(obtenerNombreLocal(idLocalEncargado))
+                } else {
+                    listOf("Todos los locales") + locales.map { it.nombreLocal }
+                }
                 val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, nombresLocales)
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
                 val spFiltro = findViewById<Spinner>(R.id.spFiltroLocalPedidos)
                 spFiltro.adapter = adapter
+                spFiltro.isEnabled = idLocalEncargado == null
                 spFiltro.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                         cargarPedidos()
@@ -102,8 +111,26 @@ class ControlPedidosActivity : AppCompatActivity() {
     }
 
     private fun filtrarPedidosPorLocal(pedidos: List<Pedido>): List<Pedido> {
+        val idLocalEncargado = obtenerIdLocalAsignadoEncargado()
+        if (sessionManager.obtenerNombreRol() == AppConstants.ROL_ENCARGADO && idLocalEncargado == null) {
+            mostrarMensaje("El encargado no tiene un local asignado.")
+            return emptyList()
+        }
+
+        if (idLocalEncargado != null) {
+            return pedidos.filter { pedido -> pedidoPerteneceALocal(pedido.idPedido, idLocalEncargado) }
+        }
+
         val idLocal = obtenerIdLocalFiltrado() ?: return pedidos
         return pedidos.filter { pedido -> pedidoPerteneceALocal(pedido.idPedido, idLocal) }
+    }
+
+    private fun obtenerIdLocalAsignadoEncargado(): Int? {
+        return if (sessionManager.obtenerNombreRol() == AppConstants.ROL_ENCARGADO) {
+            sessionManager.obtenerIdLocalAsignado()
+        } else {
+            null
+        }
     }
 
     private fun obtenerIdLocalFiltrado(): Int? {
@@ -330,6 +357,10 @@ class ControlPedidosActivity : AppCompatActivity() {
         val detalles = obtenerDetallesPedido(idPedido)
         val idLocal = detalles.firstNotNullOfOrNull { detalle -> obtenerProducto(detalle.idProducto)?.idLocal }
         return locales.firstOrNull { it.idLocal == idLocal }?.nombreLocal ?: "No identificado"
+    }
+
+    private fun obtenerNombreLocal(idLocal: Int): String {
+        return locales.firstOrNull { it.idLocal == idLocal }?.nombreLocal ?: "Local #$idLocal"
     }
 
     private fun obtenerSiguienteEstado(estadoActual: String): String? {

@@ -63,6 +63,14 @@ class UsuarioRepository(
     }
 
     fun actualizarRolUsuario(idUsuario: Int, idRol: Int): OperationResult<Boolean> {
+        return actualizarRolYLocalAsignado(idUsuario, idRol, null)
+    }
+
+    fun actualizarRolYLocalAsignado(
+        idUsuario: Int,
+        idRol: Int,
+        idLocalAsignado: Int?
+    ): OperationResult<Boolean> {
         return try {
             if (idUsuario <= 0) {
                 return OperationResult.Error("Debe seleccionar un usuario válido.")
@@ -73,7 +81,20 @@ class UsuarioRepository(
                 return OperationResult.Error("Debe seleccionar un rol válido.")
             }
 
-            val filasActualizadas = usuarioLocalDataSource.actualizarRolUsuario(idUsuario, idRol)
+            val localAsignadoNormalizado = if (rol.nombreRol == AppConstants.ROL_ENCARGADO) {
+                if (idLocalAsignado == null || idLocalAsignado <= 0) {
+                    return OperationResult.Error("Debe asignar un local al usuario encargado.")
+                }
+                idLocalAsignado
+            } else {
+                null
+            }
+
+            val filasActualizadas = usuarioLocalDataSource.actualizarRolYLocalAsignado(
+                idUsuario = idUsuario,
+                idRol = idRol,
+                idLocalAsignado = localAsignadoNormalizado
+            )
             OperationResult.Success(filasActualizadas > 0)
         } catch (exception: Exception) {
             OperationResult.Error("Ocurrió un error al actualizar el rol del usuario.", exception)

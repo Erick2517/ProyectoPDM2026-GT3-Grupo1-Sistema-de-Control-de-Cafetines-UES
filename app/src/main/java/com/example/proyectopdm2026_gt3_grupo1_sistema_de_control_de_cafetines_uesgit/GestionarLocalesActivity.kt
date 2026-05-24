@@ -88,7 +88,13 @@ class GestionarLocalesActivity : AppCompatActivity() {
             radius = dpToPx(8).toFloat()
             cardElevation = dpToPx(2).toFloat()
             useCompatPadding = true
-            setCardBackgroundColor(getColor(android.R.color.white))
+            setCardBackgroundColor(
+                if (local.estado == AppConstants.ESTADO_ACTIVO) {
+                    getColor(android.R.color.white)
+                } else {
+                    android.graphics.Color.parseColor("#F3F3F3")
+                }
+            )
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -106,6 +112,9 @@ class GestionarLocalesActivity : AppCompatActivity() {
         contenido.addView(crearTexto("Ubicación: ${local.ubicacion}", 13f, false))
         contenido.addView(crearTexto(local.descripcion.orEmpty().ifBlank { "Sin descripción" }, 13f, false))
         contenido.addView(crearEstado(local.estado))
+        if (local.estado == AppConstants.ESTADO_INACTIVO) {
+            contenido.addView(crearTexto("No visible para usuarios finales.", 12f, false))
+        }
         contenido.addView(crearAcciones(local))
 
         cardView.addView(contenido)
@@ -190,7 +199,12 @@ class GestionarLocalesActivity : AppCompatActivity() {
             is OperationResult.Error -> mostrarMensaje(resultado.message)
             is OperationResult.Success -> {
                 if (resultado.data) {
-                    mostrarMensaje("Estado del local actualizado.")
+                    val mensaje = if (local.estado == AppConstants.ESTADO_ACTIVO) {
+                        "Local desactivado correctamente."
+                    } else {
+                        "Local activado correctamente."
+                    }
+                    mostrarMensaje(mensaje)
                     cargarLocales()
                 } else {
                     mostrarMensaje("No se pudo actualizar el estado del local.")

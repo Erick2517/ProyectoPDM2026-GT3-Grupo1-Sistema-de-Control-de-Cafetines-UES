@@ -95,7 +95,8 @@ class LoginActivity : AppCompatActivity() {
                     idUsuario = usuario.idUsuario,
                     idRol = usuario.idRol,
                     nombreRol = nombreRol,
-                    idUbicacion = usuario.idUbicacion
+                    idUbicacion = usuario.idUbicacion,
+                    idLocalAsignado = usuario.idLocalAsignado
                 )
                 navegarSegunRol(nombreRol)
             }

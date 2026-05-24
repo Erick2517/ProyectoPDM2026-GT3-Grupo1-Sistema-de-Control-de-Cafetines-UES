@@ -129,7 +129,13 @@ class GestionarProductos : AppCompatActivity() {
             radius = dpToPx(8).toFloat()
             cardElevation = dpToPx(2).toFloat()
             useCompatPadding = true
-            setCardBackgroundColor(getColor(android.R.color.white))
+            setCardBackgroundColor(
+                if (producto.disponibilidad == AppConstants.DISPONIBILIDAD_DISPONIBLE) {
+                    getColor(android.R.color.white)
+                } else {
+                    android.graphics.Color.parseColor("#F3F3F3")
+                }
+            )
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
@@ -145,6 +151,9 @@ class GestionarProductos : AppCompatActivity() {
         contenido.addView(crearTexto("Local: ${obtenerNombreLocal(producto.idLocal)}", 13f, false))
         contenido.addView(crearTexto("Tipo: ${producto.tipo} | Stock: ${producto.stock}", 13f, false))
         contenido.addView(crearTexto("Disponibilidad: ${producto.disponibilidad}", 13f, false))
+        if (producto.disponibilidad != AppConstants.DISPONIBILIDAD_DISPONIBLE || producto.stock <= 0) {
+            contenido.addView(crearTexto("No disponible para venta a usuarios.", 12f, false))
+        }
         contenido.addView(crearAcciones(producto))
 
         cardView.addView(contenido)
@@ -180,9 +189,9 @@ class GestionarProductos : AppCompatActivity() {
         })
 
         val textoDisponibilidad = if (producto.disponibilidad == AppConstants.DISPONIBILIDAD_DISPONIBLE) {
-            "No disponible"
+            "Marcar no disponible"
         } else {
-            "Disponible"
+            "Marcar disponible"
         }
         fila.addView(crearBoton(textoDisponibilidad, false) {
             cambiarDisponibilidad(producto)
@@ -217,7 +226,12 @@ class GestionarProductos : AppCompatActivity() {
             is OperationResult.Error -> mostrarMensaje(resultado.message)
             is OperationResult.Success -> {
                 if (resultado.data) {
-                    mostrarMensaje("Disponibilidad actualizada.")
+                    val mensaje = if (producto.disponibilidad == AppConstants.DISPONIBILIDAD_DISPONIBLE) {
+                        "Producto marcado como no disponible."
+                    } else {
+                        "Producto marcado como disponible."
+                    }
+                    mostrarMensaje(mensaje)
                     cargarProductos()
                 } else {
                     mostrarMensaje("No se pudo actualizar el producto.")
