@@ -15,6 +15,7 @@ class UsuarioLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
             put(DatabaseContract.Usuarios.CARNET, usuario.carnet)
             put(DatabaseContract.Usuarios.ID_ROL, usuario.idRol)
             put(DatabaseContract.Usuarios.ID_UBICACION, usuario.idUbicacion)
+            put(DatabaseContract.Usuarios.ID_LOCAL_ASIGNADO, usuario.idLocalAsignado)
             put(DatabaseContract.Usuarios.ACTIVO, if (usuario.activo) 1 else 0)
         }
 
@@ -58,6 +59,20 @@ class UsuarioLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
     fun actualizarRolUsuario(idUsuario: Int, idRol: Int): Int {
         val values = ContentValues().apply {
             put(DatabaseContract.Usuarios.ID_ROL, idRol)
+        }
+
+        return databaseHelper.writableDatabase.update(
+            DatabaseContract.Usuarios.TABLE_NAME,
+            values,
+            "${DatabaseContract.Usuarios.ID_USUARIO} = ?",
+            arrayOf(idUsuario.toString())
+        )
+    }
+
+    fun actualizarRolYLocalAsignado(idUsuario: Int, idRol: Int, idLocalAsignado: Int?): Int {
+        val values = ContentValues().apply {
+            put(DatabaseContract.Usuarios.ID_ROL, idRol)
+            put(DatabaseContract.Usuarios.ID_LOCAL_ASIGNADO, idLocalAsignado)
         }
 
         return databaseHelper.writableDatabase.update(
@@ -135,6 +150,7 @@ class UsuarioLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
             put(DatabaseContract.Usuarios.CARNET, carnet)
             put(DatabaseContract.Usuarios.ID_ROL, idRol)
             put(DatabaseContract.Usuarios.ID_UBICACION, idUbicacion)
+            put(DatabaseContract.Usuarios.ID_LOCAL_ASIGNADO, idLocalAsignado)
             put(DatabaseContract.Usuarios.ACTIVO, if (activo) 1 else 0)
         }
     }
@@ -165,6 +181,7 @@ class UsuarioLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
             carnet = getString(getColumnIndexOrThrow(DatabaseContract.Usuarios.CARNET)),
             idRol = getInt(getColumnIndexOrThrow(DatabaseContract.Usuarios.ID_ROL)),
             idUbicacion = getIntOrNull(DatabaseContract.Usuarios.ID_UBICACION),
+            idLocalAsignado = getIntOrNull(DatabaseContract.Usuarios.ID_LOCAL_ASIGNADO),
             activo = getInt(getColumnIndexOrThrow(DatabaseContract.Usuarios.ACTIVO)) == 1
         )
     }

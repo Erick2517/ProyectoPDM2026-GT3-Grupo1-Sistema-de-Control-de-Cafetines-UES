@@ -2,7 +2,7 @@ package com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_u
 
 object DatabaseContract {
     const val DATABASE_NAME = "control_cafetines.db"
-    const val DATABASE_VERSION = 4
+    const val DATABASE_VERSION = 6
 
     object Roles {
         const val TABLE_NAME = "Roles"
@@ -26,6 +26,7 @@ object DatabaseContract {
         const val CARNET = "carnet"
         const val ID_ROL = "id_rol"
         const val ID_UBICACION = "id_ubicacion"
+        const val ID_LOCAL_ASIGNADO = "id_local_asignado"
         const val ACTIVO = "activo"
     }
 
@@ -93,5 +94,20 @@ object DatabaseContract {
         const val MONTO_MAXIMO = "monto_maximo"
         const val ANTICIPO = "anticipo"
         const val REFERENCIA_PAGO = "referencia_pago"
+    }
+
+    object OpcionesMenu {
+        const val TABLE_NAME = "OpcionesMenu"
+        const val ID_OPCION = "id_opcion"
+        const val NOMBRE_OPCION = "nombre_opcion"
+        const val DESCRIPCION_OPCION = "descripcion_opcion"
+        const val ESTADO = "estado"
+    }
+
+    object RolesOpcionesMenu {
+        const val TABLE_NAME = "Roles_OpcionesMenu"
+        const val ID_ROL_OPCION = "id_rol_opcion"
+        const val ID_ROL = "id_rol"
+        const val ID_OPCION = "id_opcion"
     }
 }

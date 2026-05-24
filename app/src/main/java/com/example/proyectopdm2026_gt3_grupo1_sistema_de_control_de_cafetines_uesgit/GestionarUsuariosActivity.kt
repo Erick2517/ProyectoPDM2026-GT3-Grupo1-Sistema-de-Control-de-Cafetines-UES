@@ -16,17 +16,26 @@ import androidx.cardview.widget.CardView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.database.AppDatabaseHelper
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.datasource.LocalLocalDataSource
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.datasource.OpcionMenuLocalDataSource
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.datasource.RolLocalDataSource
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.datasource.UsuarioLocalDataSource
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.repository.LocalRepository
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.repository.PermisoRepository
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.repository.UsuarioRepository
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Local
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Rol
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Usuario
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.validation.AuthValidator
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.AppConstants
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
 
 class GestionarUsuariosActivity : AppCompatActivity() {
     private lateinit var usuarioRepository: UsuarioRepository
+    private lateinit var permisoRepository: PermisoRepository
+    private lateinit var localRepository: LocalRepository
     private var roles: List<Rol> = emptyList()
+    private var locales: List<Local> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +44,7 @@ class GestionarUsuariosActivity : AppCompatActivity() {
 
         configurarDependencias()
         cargarRoles()
+        cargarLocales()
         configurarAcciones()
 
         val btnBack = findViewById<ImageView>(R.id.btnBack)
@@ -58,7 +68,11 @@ class GestionarUsuariosActivity : AppCompatActivity() {
         val databaseHelper = AppDatabaseHelper(this)
         val usuarioLocalDataSource = UsuarioLocalDataSource(databaseHelper)
         val rolLocalDataSource = RolLocalDataSource(databaseHelper)
+        val opcionMenuLocalDataSource = OpcionMenuLocalDataSource(databaseHelper)
+        val localLocalDataSource = LocalLocalDataSource(databaseHelper)
         usuarioRepository = UsuarioRepository(usuarioLocalDataSource, rolLocalDataSource)
+        permisoRepository = PermisoRepository(opcionMenuLocalDataSource)
+        localRepository = LocalRepository(localLocalDataSource)
     }
 
     private fun configurarAcciones() {
@@ -73,6 +87,16 @@ class GestionarUsuariosActivity : AppCompatActivity() {
             is OperationResult.Success -> {
                 roles = resultado.data
                 configurarSpinnerRoles(findViewById(R.id.spRolNuevoUsuario), null)
+            }
+        }
+    }
+
+    private fun cargarLocales() {
+        when (val resultado = localRepository.obtenerLocalesActivos()) {
+            is OperationResult.Error -> mostrarMensaje(resultado.message)
+            is OperationResult.Success -> {
+                locales = resultado.data
+                configurarSpinnerLocales(findViewById(R.id.spLocalNuevoUsuario), null)
             }
         }
     }
@@ -99,6 +123,12 @@ class GestionarUsuariosActivity : AppCompatActivity() {
         val password = findViewById<EditText>(R.id.etPasswordUsuarioAdmin).text.toString()
         val confirmarPassword = findViewById<EditText>(R.id.etConfirmPasswordUsuarioAdmin).text.toString()
         val rol = obtenerRolSeleccionado(findViewById(R.id.spRolNuevoUsuario))
+        val localAsignado = obtenerLocalSeleccionado(findViewById(R.id.spLocalNuevoUsuario))
+
+        if (rol?.nombreRol == AppConstants.ROL_ENCARGADO && localAsignado == null) {
+            mostrarMensaje("Debe asignar un local al usuario encargado.")
+            return
+        }
 
         val errorValidacion = AuthValidator.validarRegistro(
             nombre = nombre,
@@ -121,7 +151,8 @@ class GestionarUsuariosActivity : AppCompatActivity() {
             password = password,
             carnet = carnet,
             idRol = rol?.idRol ?: 0,
-            idUbicacion = null
+            idUbicacion = null,
+            idLocalAsignado = if (rol?.nombreRol == AppConstants.ROL_ENCARGADO) localAsignado?.idLocal else null
         )
 
         when (val resultado = usuarioRepository.registrarUsuario(usuario)) {
@@ -172,6 +203,10 @@ class GestionarUsuariosActivity : AppCompatActivity() {
         contenido.addView(crearTexto(usuario.nombre, 16f, true))
         contenido.addView(crearTexto("${usuario.email} | ${usuario.carnet}", 13f, false))
         contenido.addView(crearTexto("Rol actual: ${obtenerNombreRol(usuario.idRol)}", 13f, false))
+        if (obtenerNombreRol(usuario.idRol) == AppConstants.ROL_ENCARGADO) {
+            contenido.addView(crearTexto("Local asignado: ${obtenerNombreLocal(usuario.idLocalAsignado)}", 13f, false))
+        }
+        contenido.addView(crearTexto("Opciones: ${obtenerResumenOpciones(usuario.idRol)}", 12f, false))
         contenido.addView(crearControlRol(usuario))
 
         cardView.addView(contenido)
@@ -196,8 +231,15 @@ class GestionarUsuariosActivity : AppCompatActivity() {
         }
         configurarSpinnerRoles(spinner, usuario.idRol)
 
+        val spinnerLocal = Spinner(this).apply {
+            layoutParams = LinearLayout.LayoutParams(0, dpToPx(48), 1f).apply {
+                marginEnd = dpToPx(8)
+            }
+        }
+        configurarSpinnerLocales(spinnerLocal, usuario.idLocalAsignado)
+
         val btnActualizar = Button(this).apply {
-            text = "Actualizar rol"
+            text = "Actualizar"
             textSize = 12f
             setBackgroundColor(getColor(R.color.wine))
             setTextColor(getColor(android.R.color.white))
@@ -207,15 +249,17 @@ class GestionarUsuariosActivity : AppCompatActivity() {
             )
             setOnClickListener {
                 val rolSeleccionado = obtenerRolSeleccionado(spinner)
+                val localSeleccionado = obtenerLocalSeleccionado(spinnerLocal)
                 if (rolSeleccionado == null) {
                     mostrarMensaje("Debe seleccionar un rol válido.")
                     return@setOnClickListener
                 }
-                actualizarRolUsuario(usuario, rolSeleccionado)
+                actualizarRolUsuario(usuario, rolSeleccionado, localSeleccionado)
             }
         }
 
         fila.addView(spinner)
+        fila.addView(spinnerLocal)
         fila.addView(btnActualizar)
         return fila
     }
@@ -235,8 +279,31 @@ class GestionarUsuariosActivity : AppCompatActivity() {
         }
     }
 
-    private fun actualizarRolUsuario(usuario: Usuario, rol: Rol) {
-        when (val resultado = usuarioRepository.actualizarRolUsuario(usuario.idUsuario, rol.idRol)) {
+    private fun configurarSpinnerLocales(spinner: Spinner, idLocalSeleccionado: Int?) {
+        val nombresLocales = listOf("Sin local") + locales.map { it.nombreLocal }
+        val adapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_spinner_item,
+            nombresLocales
+        )
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinner.adapter = adapter
+
+        val posicionSeleccionada = locales.indexOfFirst { it.idLocal == idLocalSeleccionado }
+        if (posicionSeleccionada >= 0) {
+            spinner.setSelection(posicionSeleccionada + 1)
+        }
+    }
+
+    private fun actualizarRolUsuario(usuario: Usuario, rol: Rol, local: Local?) {
+        val idLocalAsignado = if (rol.nombreRol == AppConstants.ROL_ENCARGADO) local?.idLocal else null
+        when (
+            val resultado = usuarioRepository.actualizarRolYLocalAsignado(
+                idUsuario = usuario.idUsuario,
+                idRol = rol.idRol,
+                idLocalAsignado = idLocalAsignado
+            )
+        ) {
             is OperationResult.Error -> mostrarMensaje(resultado.message)
             is OperationResult.Success -> {
                 if (resultado.data) {
@@ -253,8 +320,32 @@ class GestionarUsuariosActivity : AppCompatActivity() {
         return roles.getOrNull(spinner.selectedItemPosition)
     }
 
+    private fun obtenerLocalSeleccionado(spinner: Spinner): Local? {
+        val posicion = spinner.selectedItemPosition
+        if (posicion <= 0) return null
+        return locales.getOrNull(posicion - 1)
+    }
+
     private fun obtenerNombreRol(idRol: Int): String {
         return roles.firstOrNull { it.idRol == idRol }?.nombreRol ?: "Sin rol"
+    }
+
+    private fun obtenerNombreLocal(idLocal: Int?): String {
+        if (idLocal == null || idLocal <= 0) return "Sin local asignado"
+        return locales.firstOrNull { it.idLocal == idLocal }?.nombreLocal ?: "Local #$idLocal"
+    }
+
+    private fun obtenerResumenOpciones(idRol: Int): String {
+        return when (val resultado = permisoRepository.obtenerOpcionesPorRol(idRol)) {
+            is OperationResult.Error -> "No disponibles"
+            is OperationResult.Success -> {
+                if (resultado.data.isEmpty()) {
+                    "Sin opciones asignadas"
+                } else {
+                    resultado.data.joinToString(", ") { it.nombreOpcion }
+                }
+            }
+        }
     }
 
     private fun limpiarFormulario() {
@@ -264,6 +355,7 @@ class GestionarUsuariosActivity : AppCompatActivity() {
         findViewById<EditText>(R.id.etPasswordUsuarioAdmin).text.clear()
         findViewById<EditText>(R.id.etConfirmPasswordUsuarioAdmin).text.clear()
         findViewById<Spinner>(R.id.spRolNuevoUsuario).setSelection(0)
+        findViewById<Spinner>(R.id.spLocalNuevoUsuario).setSelection(0)
     }
 
     private fun crearTexto(texto: String, textSize: Float, negrita: Boolean): TextView {

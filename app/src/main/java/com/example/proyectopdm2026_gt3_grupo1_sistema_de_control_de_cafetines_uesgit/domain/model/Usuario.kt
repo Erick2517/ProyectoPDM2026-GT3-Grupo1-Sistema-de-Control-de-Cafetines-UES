@@ -8,5 +8,6 @@ data class Usuario(
     val carnet: String,
     val idRol: Int,
     val idUbicacion: Int? = null,
+    val idLocalAsignado: Int? = null,
     val activo: Boolean = true
 )
