@@ -22,6 +22,7 @@ import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_ue
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.CarritoManager
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.ImageViewLoader
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.ApiClient
 import java.util.Locale
 
 class ProductosActivity : AppCompatActivity() {
@@ -37,6 +38,28 @@ class ProductosActivity : AppCompatActivity() {
         configurarRepositorio()
         cargarDatosLocal()
         cargarProductos()
+
+        ApiClient.get("/productos?local=$idLocal", object : ApiClient.ApiCallback {
+            override fun onSuccess(response: String) {
+                runOnUiThread {
+                    Toast.makeText(
+                        this@ProductosActivity,
+                        "API productos: $response",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+
+            override fun onError(error: String) {
+                runOnUiThread {
+                    Toast.makeText(
+                        this@ProductosActivity,
+                        "Error API productos: $error",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        })
 
         val btnBack = findViewById<ImageView>(R.id.btnBack)
         val btnVerCarrito = findViewById<Button>(R.id.btnVerCarrito)

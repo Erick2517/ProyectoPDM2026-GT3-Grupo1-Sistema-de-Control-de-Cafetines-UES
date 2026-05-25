@@ -29,6 +29,7 @@ import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_ue
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.ImageViewLoader
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.SessionManager
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.ApiClient
 import java.util.Locale
 
 class CarritoActivity : AppCompatActivity() {
@@ -292,6 +293,8 @@ class CarritoActivity : AppCompatActivity() {
         when (val resultado = pedidoRepository.crearPedido(pedido, detalles)) {
             is OperationResult.Error -> mostrarMensaje(resultado.message)
             is OperationResult.Success -> {
+                registrarPedidoEnApi(pedido)
+
                 CarritoManager.vaciarCarrito()
                 mostrarMensaje("Pedido registrado correctamente.")
                 abrirPantallaPago(resultado.data)
@@ -350,6 +353,41 @@ class CarritoActivity : AppCompatActivity() {
             total = PedidoValidator.calcularTotal(detalles),
             idUsuario = sessionManager.obtenerIdUsuario(),
             idUbicacion = idUbicacionPedido
+        )
+    }
+
+    private fun registrarPedidoEnApi(pedido: Pedido) {
+        ApiClient.postForm(
+            "/pedidos",
+            mapOf(
+                "fecha_pedido" to pedido.fechaPedido,
+                "tipo_pedido" to pedido.tipoPedido,
+                "estado_pedido" to pedido.estadoPedido,
+                "total" to pedido.total.toString(),
+                "id_usuario" to pedido.idUsuario.toString(),
+                "id_ubicacion" to (pedido.idUbicacion?.toString() ?: "1")
+            ),
+            object : ApiClient.ApiCallback {
+                override fun onSuccess(response: String) {
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@CarritoActivity,
+                            "API pedido creado correctamente",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+
+                override fun onError(error: String) {
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@CarritoActivity,
+                            "Error API pedido: $error",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
         )
     }
 

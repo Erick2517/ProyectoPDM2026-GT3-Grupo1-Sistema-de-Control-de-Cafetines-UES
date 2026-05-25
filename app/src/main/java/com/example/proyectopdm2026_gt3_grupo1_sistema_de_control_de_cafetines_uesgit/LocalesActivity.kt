@@ -18,6 +18,7 @@ import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_ue
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.AppConstants
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.ImageViewLoader
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.ApiClient
 
 class LocalesActivity : AppCompatActivity() {
     private lateinit var localRepository: LocalRepository
@@ -29,6 +30,20 @@ class LocalesActivity : AppCompatActivity() {
 
         configurarRepositorio()
         cargarLocales()
+
+        ApiClient.get("/locales", object : ApiClient.ApiCallback {
+            override fun onSuccess(response: String) {
+                runOnUiThread {
+                    Toast.makeText(this@LocalesActivity, "API locales: $response", Toast.LENGTH_LONG).show()
+                }
+            }
+
+            override fun onError(error: String) {
+                runOnUiThread {
+                    Toast.makeText(this@LocalesActivity, error, Toast.LENGTH_LONG).show()
+                }
+            }
+        })
 
         val btnBack = findViewById<ImageView>(R.id.btnBack)
 

@@ -23,6 +23,7 @@ import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_ue
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.AppConstants
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.DateUtils
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.ApiClient
 import java.util.Locale
 
 class PagoActivity : AppCompatActivity() {
@@ -161,7 +162,13 @@ class PagoActivity : AppCompatActivity() {
 
         when (val resultado = pagoRepository.registrarPagoConfirmado(pago)) {
             is OperationResult.Error -> mostrarMensaje(resultado.message)
-            is OperationResult.Success -> abrirConfirmacionPago()
+            is OperationResult.Success -> {
+                registrarPagoEnApi(pago)
+
+                actualizarEstadoPedidoEnApi(pedido.idPedido) {
+                    abrirConfirmacionPago()
+                }
+            }
         }
     }
 
@@ -171,6 +178,71 @@ class PagoActivity : AppCompatActivity() {
             AppConstants.METODO_PAGO_BITCOIN -> "SIM-${metodoPago.uppercase(Locale.ROOT)}-${System.currentTimeMillis()}"
             else -> null
         }
+    }
+
+    private fun registrarPagoEnApi(pago: Pago) {
+        ApiClient.postForm(
+            "/pagos",
+            mapOf(
+                "id_pedido" to pago.idPedido.toString(),
+                "metodo_pago" to pago.metodoPago,
+                "monto" to pago.monto.toString(),
+                "fecha_pago" to pago.fechaPago,
+                "estado_pago" to pago.estadoPago,
+                "referencia" to (pago.referencia ?: "")
+            ),
+            object : ApiClient.ApiCallback {
+                override fun onSuccess(response: String) {
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@PagoActivity,
+                            "API pago creado correctamente",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+
+                override fun onError(error: String) {
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@PagoActivity,
+                            "Error API pago: $error",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+        )
+    }
+
+    private fun actualizarEstadoPedidoEnApi(idPedido: Int, onFinalizado: () -> Unit) {
+        ApiClient.patchForm(
+            "/pedidos/$idPedido/estado",
+            mapOf(
+                "estado_pedido" to "pagado"
+            ),
+            object : ApiClient.ApiCallback {
+                override fun onSuccess(response: String) {
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@PagoActivity,
+                            "API estado de pedido actualizado",
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                        onFinalizado()
+                    }
+                }
+
+                override fun onError(error: String) {
+                    runOnUiThread {
+                        // No se muestra al usuario final porque el pago local ya fue confirmado.
+                        // El error puede ocurrir si el ID local del pedido no coincide con el ID remoto en la API.
+                        onFinalizado()
+                    }
+                }
+            }
+        )
     }
 
     private fun abrirConfirmacionPago() {
