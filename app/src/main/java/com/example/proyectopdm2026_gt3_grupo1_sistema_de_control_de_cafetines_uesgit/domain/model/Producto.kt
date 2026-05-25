@@ -7,5 +7,6 @@ data class Producto(
     val disponibilidad: String,
     val tipo: String,
     val stock: Int,
-    val idLocal: Int
+    val idLocal: Int,
+    val imagenUri: String? = null
 )

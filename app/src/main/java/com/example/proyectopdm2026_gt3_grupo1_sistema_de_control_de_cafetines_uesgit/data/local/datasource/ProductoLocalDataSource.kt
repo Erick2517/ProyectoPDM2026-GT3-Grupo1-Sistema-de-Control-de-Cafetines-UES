@@ -123,6 +123,7 @@ class ProductoLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
             put(DatabaseContract.Productos.TIPO, tipo)
             put(DatabaseContract.Productos.STOCK, stock)
             put(DatabaseContract.Productos.ID_LOCAL, idLocal)
+            put(DatabaseContract.Productos.IMAGEN_URI, imagenUri)
         }
     }
 
@@ -134,7 +135,13 @@ class ProductoLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
             disponibilidad = getString(getColumnIndexOrThrow(DatabaseContract.Productos.DISPONIBILIDAD)),
             tipo = getString(getColumnIndexOrThrow(DatabaseContract.Productos.TIPO)),
             stock = getInt(getColumnIndexOrThrow(DatabaseContract.Productos.STOCK)),
-            idLocal = getInt(getColumnIndexOrThrow(DatabaseContract.Productos.ID_LOCAL))
+            idLocal = getInt(getColumnIndexOrThrow(DatabaseContract.Productos.ID_LOCAL)),
+            imagenUri = getStringOrNull(DatabaseContract.Productos.IMAGEN_URI)
         )
+    }
+
+    private fun Cursor.getStringOrNull(columnName: String): String? {
+        val columnIndex = getColumnIndexOrThrow(columnName)
+        return if (isNull(columnIndex)) null else getString(columnIndex)
     }
 }

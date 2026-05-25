@@ -26,6 +26,7 @@ import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_ue
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.AppConstants
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.CarritoManager
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.DateUtils
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.ImageViewLoader
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.SessionManager
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.ApiClient
@@ -105,10 +106,10 @@ class CarritoActivity : AppCompatActivity() {
         }
 
         val imagenProducto = ImageView(this).apply {
-            setImageResource(R.drawable.logo_ues)
+            ImageViewLoader.cargarImagen(this, item.producto.imagenUri, R.drawable.logo_ues)
             contentDescription = "Imagen del producto ${item.producto.nombreProducto}"
             layoutParams = LinearLayout.LayoutParams(dpToPx(90), dpToPx(76))
-            scaleType = ImageView.ScaleType.CENTER_INSIDE
+            scaleType = ImageView.ScaleType.CENTER_CROP
         }
 
         val informacion = LinearLayout(this).apply {
