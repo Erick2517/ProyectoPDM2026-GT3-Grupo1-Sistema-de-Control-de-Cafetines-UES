@@ -63,11 +63,7 @@ object ApiClient {
                     "application/x-www-form-urlencoded"
                 )
 
-                val body = params.entries.joinToString("&") { entry ->
-                    "${URLEncoder.encode(entry.key, "UTF-8")}=${
-                        URLEncoder.encode(entry.value, "UTF-8")
-                    }"
-                }
+                val body = crearCuerpoFormulario(params)
 
                 val writer = OutputStreamWriter(connection.outputStream)
                 writer.write(body)
@@ -88,6 +84,54 @@ object ApiClient {
             } finally {
                 connection?.disconnect()
             }
+        }
+    }
+
+    fun patchForm(endpoint: String, params: Map<String, String>, callback: ApiCallback) {
+        executor.execute {
+            var connection: HttpURLConnection? = null
+
+            try {
+                val url = URL(BASE_URL + endpoint)
+                connection = url.openConnection() as HttpURLConnection
+                connection.requestMethod = "PATCH"
+                connection.connectTimeout = 10000
+                connection.readTimeout = 10000
+                connection.doOutput = true
+                connection.setRequestProperty(
+                    "Content-Type",
+                    "application/x-www-form-urlencoded"
+                )
+
+                val body = crearCuerpoFormulario(params)
+
+                val writer = OutputStreamWriter(connection.outputStream)
+                writer.write(body)
+                writer.flush()
+                writer.close()
+
+                val responseCode = connection.responseCode
+                val response = leerRespuesta(connection, responseCode)
+
+                if (responseCode in 200..299) {
+                    callback.onSuccess(response)
+                } else {
+                    callback.onError("Error HTTP $responseCode: $response")
+                }
+
+            } catch (e: Exception) {
+                callback.onError("Error de conexión: ${e.message}")
+            } finally {
+                connection?.disconnect()
+            }
+        }
+    }
+
+    private fun crearCuerpoFormulario(params: Map<String, String>): String {
+        return params.entries.joinToString("&") { entry ->
+            "${URLEncoder.encode(entry.key, "UTF-8")}=${
+                URLEncoder.encode(entry.value, "UTF-8")
+            }"
         }
     }
 
