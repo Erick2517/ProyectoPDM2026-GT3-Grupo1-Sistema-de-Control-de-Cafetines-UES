@@ -19,6 +19,7 @@ import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_ue
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.AppConstants
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.SessionManager
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.ApiClient
 
 class LoginActivity : AppCompatActivity() {
     private lateinit var usuarioRepository: UsuarioRepository
@@ -69,6 +70,35 @@ class LoginActivity : AppCompatActivity() {
             mostrarMensaje(errorValidacion)
             return
         }
+
+        ApiClient.postForm(
+            "/usuarios/login",
+            mapOf(
+                "email" to email,
+                "password" to password
+            ),
+            object : ApiClient.ApiCallback {
+                override fun onSuccess(response: String) {
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "API login correcto: $response",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+
+                override fun onError(error: String) {
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@LoginActivity,
+                            "Error API login: $error",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }
+            }
+        )
 
         when (val resultado = usuarioRepository.iniciarSesion(email, password)) {
             is OperationResult.Error -> mostrarMensaje(resultado.message)
