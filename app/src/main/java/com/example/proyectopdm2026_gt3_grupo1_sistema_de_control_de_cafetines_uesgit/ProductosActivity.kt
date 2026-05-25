@@ -20,6 +20,7 @@ import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_ue
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Producto
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.AppConstants
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.CarritoManager
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.ImageViewLoader
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
 import java.util.Locale
 
@@ -127,10 +128,10 @@ class ProductosActivity : AppCompatActivity() {
         }
 
         val imagenProducto = ImageView(this).apply {
-            setImageResource(R.drawable.logo_ues)
+            ImageViewLoader.cargarImagen(this, producto.imagenUri, R.drawable.logo_ues)
             contentDescription = "Imagen del producto ${producto.nombreProducto}"
             layoutParams = LinearLayout.LayoutParams(dpToPx(100), dpToPx(80))
-            scaleType = ImageView.ScaleType.CENTER_INSIDE
+            scaleType = ImageView.ScaleType.CENTER_CROP
         }
 
         val informacion = LinearLayout(this).apply {

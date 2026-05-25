@@ -218,10 +218,12 @@
                     android:padding="20dp">
 
                     <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
+                        android:id="@+id/imgPreviewProducto"
+                        android:layout_width="96dp"
+                        android:layout_height="72dp"
                         android:layout_marginBottom="6dp"
                         android:contentDescription="Cámara"
+                        android:scaleType="centerInside"
                         android:src="@drawable/ic_camera" />
 
                     <TextView

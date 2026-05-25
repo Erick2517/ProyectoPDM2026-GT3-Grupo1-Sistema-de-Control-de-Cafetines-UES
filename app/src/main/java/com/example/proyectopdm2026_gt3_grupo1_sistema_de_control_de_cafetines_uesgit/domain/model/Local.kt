@@ -5,5 +5,6 @@ data class Local(
     val nombreLocal: String,
     val ubicacion: String,
     val descripcion: String? = null,
-    val estado: String
+    val estado: String,
+    val imagenUri: String? = null
 )
