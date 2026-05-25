@@ -14,8 +14,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.database.AppDatabaseHelper
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.datasource.PagoLocalDataSource
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.datasource.PedidoEspecialLocalDataSource
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.local.datasource.PedidoLocalDataSource
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.repository.PagoRepository
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.repository.PedidoEspecialRepository
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.repository.PedidoRepository
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Pago
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Pedido
@@ -29,6 +31,7 @@ import java.util.Locale
 class PagoActivity : AppCompatActivity() {
     private lateinit var pagoRepository: PagoRepository
     private lateinit var pedidoRepository: PedidoRepository
+    private lateinit var pedidoEspecialRepository: PedidoEspecialRepository
     private var pedidoActual: Pedido? = null
     private var metodoPagoSeleccionado: String = ""
 
@@ -63,6 +66,7 @@ class PagoActivity : AppCompatActivity() {
         val databaseHelper = AppDatabaseHelper(this)
         pagoRepository = PagoRepository(PagoLocalDataSource(databaseHelper))
         pedidoRepository = PedidoRepository(PedidoLocalDataSource(databaseHelper))
+        pedidoEspecialRepository = PedidoEspecialRepository(PedidoEspecialLocalDataSource(databaseHelper))
     }
 
     private fun configurarMetodosPago() {
@@ -86,7 +90,19 @@ class PagoActivity : AppCompatActivity() {
 
         when (val resultado = pedidoRepository.obtenerPedidoPorId(idPedido)) {
             is OperationResult.Error -> bloquearPago(resultado.message)
-            is OperationResult.Success -> mostrarPedido(resultado.data)
+            is OperationResult.Success ->{
+                mostrarPedido(resultado.data)
+                if(resultado.data.tipoPedido.contains("especial", ignoreCase = true)) {
+                    when (val pedidoEspecial = pedidoEspecialRepository.obtenerPedidoEspecialPorPorIdPedido(idPedido)) {
+                        is OperationResult.Error -> bloquearPago(pedidoEspecial.message)
+                        is OperationResult.Success -> {
+                            findViewById<TextView>(R.id.tvSubtotalPago).text = formatearPrecio(pedidoEspecial.data.anticipo)
+                            findViewById<TextView>(R.id.tvTotalResumenPago).text = formatearPrecio(pedidoEspecial.data.anticipo)
+                            findViewById<EditText>(R.id.txtMontoPago).setText(String.format(Locale.US, "%.2f", pedidoEspecial.data.anticipo))
+                        }
+                    }
+                }
+            }
         }
     }
 

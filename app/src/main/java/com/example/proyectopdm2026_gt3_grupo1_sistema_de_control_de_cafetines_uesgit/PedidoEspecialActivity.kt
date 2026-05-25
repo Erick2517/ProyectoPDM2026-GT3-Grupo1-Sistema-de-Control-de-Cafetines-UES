@@ -11,6 +11,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -25,10 +26,12 @@ import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_ue
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.data.repository.ProductoRepository
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Pedido
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.PedidoEspecial
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Producto
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.AppConstants
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.SessionManager
 import java.util.Calendar
+import kotlin.math.round
 
 class PedidoEspecialActivity : AppCompatActivity() {
 
@@ -47,7 +50,7 @@ class PedidoEspecialActivity : AppCompatActivity() {
     private lateinit var pedidoEspecialRepository: PedidoEspecialRepository
     private lateinit var productoRepository: ProductoRepository // El que integramos del grupo
     private lateinit var sessionManager: SessionManager
-    private var productosElegidosObjetos = ArrayList<com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Producto>()
+    private var productosElegidosObjetos = ArrayList<Producto>()
 
     // Variable global para controlar qué cafetín seleccionó el usuario
     private var idLocalSeleccionado: Int = -1
@@ -125,19 +128,34 @@ class PedidoEspecialActivity : AppCompatActivity() {
                         Toast.makeText(this, "Este cafetín no tiene productos disponibles.", Toast.LENGTH_SHORT).show()
                         return@setOnClickListener
                     }
-
-                    val listaNombres = productosDb.map { it.nombreProducto }.toTypedArray()
-                    val seleccionados = BooleanArray(productosDb.size)
-                    val productosElegidos = ArrayList<String>()
+                    if (productosElegidosObjetos.isNotEmpty() && productosElegidosObjetos.first().idLocal != idLocalSeleccionado) {
+                        productosElegidosObjetos.clear() // Vaciamos la lista global
+                        etProductos.setText("")          // Limpiamos el EditText visualmente
+                    }
+                    val listaNombres = productosDb.map { "${it.nombreProducto} - $${it.precio}" }.toTypedArray()
+                    val seleccionados = productosDb.map { productoDb ->
+                        productosElegidosObjetos.any { seleccionado -> seleccionado.idProducto == productoDb.idProducto }
+                    }.toBooleanArray()
 
                     AlertDialog.Builder(this)
                         .setTitle("Productos de este Cafetín")
                         .setMultiChoiceItems(listaNombres, seleccionados) { _, index, isChecked ->
-                            if (isChecked) productosElegidos.add(listaNombres[index])
-                            else productosElegidos.remove(listaNombres[index])
+                            val productoActual = productosDb[index]
+                            if (isChecked) {
+                                productosElegidosObjetos.add(productoActual)
+                            } else {
+                                productosElegidosObjetos.remove(productoActual)
+                            }
                         }
                         .setPositiveButton("Aceptar") { _, _ ->
-                            etProductos.setText(if (productosElegidos.isNotEmpty()) productosElegidos.joinToString(", ") else "")
+                            val nombresParaMostrar = productosElegidosObjetos.joinToString(", ") { it.nombreProducto }
+                            etProductos.setText(nombresParaMostrar)
+
+                            //calcular el total de oproductos seleccionados
+                            val numPersona=etCantidadPersonas.text.toString().toInt()
+                            val totalTemp = productosElegidosObjetos.sumOf { it.precio }*numPersona
+                            val total: Double = round(totalTemp * 100) / 100.0
+                            findViewById<TextView>(R.id.etTotal).text = total.toString()
                         }
                         .setNegativeButton("Cancelar", null)
                         .show()
@@ -188,6 +206,9 @@ class PedidoEspecialActivity : AppCompatActivity() {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 idLocalSeleccionado = listaLocales[position].first
                 etProductos.setText("") // Reseteamos productos para evitar cruce de locales
+                if (productosElegidosObjetos.isNotEmpty() && productosElegidosObjetos.first().idLocal != idLocalSeleccionado) {
+                    productosElegidosObjetos.clear() // Vaciamos la lista global
+                }
             }
             override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
@@ -210,36 +231,38 @@ class PedidoEspecialActivity : AppCompatActivity() {
         val cantidad = cantidadStr.toIntOrNull() ?: 0
         val presupuesto = presupuestoStr.toDoubleOrNull() ?: 0.0
 
-        if (presupuesto < 25.00 || presupuesto > 200.00) {
-            etPresupuesto.error = "El presupuesto debe estar entre $25.00 y $200.00"
-            return
-        }
 
         val idUsuario = sessionManager.obtenerIdUsuario()
-        val idLocal = idLocalSeleccionado
+        val idUbicacion = sessionManager.obtenerIdUbicacion()
 
         //concatenación en la descripción
         val descripcionCompleta = "$tipo - Productos: $productosSeleccionados"
-
+        var totalTemp = productosElegidosObjetos.sumOf { it.precio }*cantidad
+        val total: Double = round(totalTemp * 100) / 100.0
+        if (total < 25.00 || total > 200.00 || presupuesto < total) {
+            etPresupuesto.error = "El total debe estar entre $25.00 y $200.00 y menor al presupuesto."
+            return
+        }
         val pedidoBase = Pedido(
             idPedido = 0,
             tipoPedido = "Especial: $tipo",
             fechaPedido = "$fecha $hora",
             estadoPedido = AppConstants.ESTADO_PEDIDO_PENDIENTE_PAGO,
-            total = presupuesto,
+            total = total,
             idUsuario = idUsuario,
-            idUbicacion = idLocal
+            idUbicacion = idUbicacion
         )
 
-
         val listaDetalles = productosElegidosObjetos.map { producto ->
+            val subtotalTemp = producto.precio * cantidad
+            val subtotal: Double = round(subtotalTemp * 100) / 100.0
             com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.DetallePedido(
                 idDetallePedido = 0,
                 idPedido = 0,
                 idProducto = producto.idProducto,
-                cantidad = 1,
+                cantidad = cantidad,
                 precioUnitario = producto.precio,
-                subtotal = producto.precio
+                subtotal = subtotal
             )
         }
 
@@ -247,7 +270,7 @@ class PedidoEspecialActivity : AppCompatActivity() {
         when (val resultadoLocal = pedidoRepository.crearPedido(pedidoBase, listaDetalles)) {
             is OperationResult.Success<Long> -> {
                 val idInsertadoLocal = resultadoLocal.data
-
+                val anticipo: Double = round((total*0.5) * 100) / 100.0
                 val detalleEspecial = PedidoEspecial(
                     idPedidoEspecial = 0,
                     idPedido = idInsertadoLocal.toInt(),
@@ -257,7 +280,7 @@ class PedidoEspecialActivity : AppCompatActivity() {
                     numeroPersonas = cantidad,
                     montoMinimo = 25.00,
                     montoMaximo = 200.00,
-                    anticipo = presupuesto,
+                    anticipo = anticipo,
                     referenciaPago = null
                 )
 
@@ -281,7 +304,7 @@ class PedidoEspecialActivity : AppCompatActivity() {
         Toast.makeText(this, "Pedido registrado. Abriendo pantalla de pago...", Toast.LENGTH_SHORT).show()
 
         val intent = Intent(this, PagoActivity::class.java).apply {
-            // Usamos las constantes globales de tu grupo en lugar de textos planos
+
             putExtra(AppConstants.EXTRA_ID_PEDIDO, idLocal.toLong())
             putExtra(AppConstants.EXTRA_TOTAL_PAGAR, pedido.total)
             putExtra(AppConstants.EXTRA_VIENE_DE_MIS_PEDIDOS, true)
