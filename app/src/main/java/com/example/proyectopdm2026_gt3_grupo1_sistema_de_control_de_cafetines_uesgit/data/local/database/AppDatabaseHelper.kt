@@ -61,6 +61,17 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
             )
             asignarLocalBaseAEncargado(db)
         }
+
+        if (oldVersion < 7) {
+            db.execSQL(
+                "ALTER TABLE ${DatabaseContract.Locales.TABLE_NAME} " +
+                    "ADD COLUMN ${DatabaseContract.Locales.IMAGEN_URI} TEXT"
+            )
+            db.execSQL(
+                "ALTER TABLE ${DatabaseContract.Productos.TABLE_NAME} " +
+                    "ADD COLUMN ${DatabaseContract.Productos.IMAGEN_URI} TEXT"
+            )
+        }
     }
 
     override fun onConfigure(db: SQLiteDatabase) {
@@ -288,6 +299,7 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
             put(DatabaseContract.Locales.UBICACION, ubicacion)
             put(DatabaseContract.Locales.DESCRIPCION, descripcion)
             put(DatabaseContract.Locales.ESTADO, estado)
+            putNull(DatabaseContract.Locales.IMAGEN_URI)
         }
         db.insert(DatabaseContract.Locales.TABLE_NAME, null, values)
     }
@@ -308,6 +320,7 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
             put(DatabaseContract.Productos.TIPO, tipo)
             put(DatabaseContract.Productos.STOCK, stock)
             put(DatabaseContract.Productos.ID_LOCAL, idLocal)
+            putNull(DatabaseContract.Productos.IMAGEN_URI)
         }
         db.insert(DatabaseContract.Productos.TABLE_NAME, null, values)
     }
@@ -468,7 +481,8 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
                 nombre_local TEXT NOT NULL,
                 ubicacion TEXT NOT NULL,
                 descripcion TEXT,
-                estado TEXT NOT NULL
+                estado TEXT NOT NULL,
+                imagen_uri TEXT
             )
         """
 
@@ -481,6 +495,7 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
                 tipo TEXT NOT NULL,
                 stock INTEGER NOT NULL DEFAULT 0,
                 id_local INTEGER NOT NULL,
+                imagen_uri TEXT,
                 FOREIGN KEY (id_local) REFERENCES Locales(id_local)
             )
         """

@@ -114,6 +114,7 @@ class LocalLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
             put(DatabaseContract.Locales.UBICACION, ubicacion)
             put(DatabaseContract.Locales.DESCRIPCION, descripcion)
             put(DatabaseContract.Locales.ESTADO, estado)
+            put(DatabaseContract.Locales.IMAGEN_URI, imagenUri)
         }
     }
 
@@ -123,7 +124,8 @@ class LocalLocalDataSource(private val databaseHelper: AppDatabaseHelper) {
             nombreLocal = getString(getColumnIndexOrThrow(DatabaseContract.Locales.NOMBRE_LOCAL)),
             ubicacion = getString(getColumnIndexOrThrow(DatabaseContract.Locales.UBICACION)),
             descripcion = getStringOrNull(DatabaseContract.Locales.DESCRIPCION),
-            estado = getString(getColumnIndexOrThrow(DatabaseContract.Locales.ESTADO))
+            estado = getString(getColumnIndexOrThrow(DatabaseContract.Locales.ESTADO)),
+            imagenUri = getStringOrNull(DatabaseContract.Locales.IMAGEN_URI)
         )
     }
 
