@@ -13,6 +13,8 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
     null,
     DatabaseContract.DATABASE_VERSION
 ) {
+    private val appContext = context.applicationContext
+
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL(CREATE_ROLES_TABLE)
         db.execSQL(CREATE_UBICACIONES_TABLE)
@@ -31,6 +33,7 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
         insertarUsuariosBase(db)
         insertarOpcionesMenuBase(db)
         insertarPermisosMenuBase(db)
+        ejecutarScriptDesdeAssets(db, DML_DATOS_PRUEBA_ASSET)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -77,6 +80,11 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
     override fun onConfigure(db: SQLiteDatabase) {
         super.onConfigure(db)
         db.setForeignKeyConstraintsEnabled(true)
+    }
+
+    override fun onOpen(db: SQLiteDatabase) {
+        super.onOpen(db)
+        cargarDatosPruebaSiFaltan(db)
     }
 
     private fun insertarRolesBase(db: SQLiteDatabase) {
@@ -442,7 +450,71 @@ class AppDatabaseHelper(context: Context) : SQLiteOpenHelper(
         }
     }
 
+    private fun ejecutarScriptDesdeAssets(db: SQLiteDatabase, assetPath: String) {
+        val script = try {
+            appContext.assets.open(assetPath).bufferedReader().use { it.readText() }
+        } catch (_: RuntimeException) {
+            return
+        }
+
+        db.beginTransaction()
+        try {
+            dividirSentenciasSql(script).forEach { sentencia ->
+                db.execSQL(sentencia)
+            }
+            db.setTransactionSuccessful()
+        } finally {
+            db.endTransaction()
+        }
+    }
+
+    private fun dividirSentenciasSql(script: String): List<String> {
+        return script
+            .lineSequence()
+            .map { it.trim() }
+            .filterNot { it.isBlank() || it.startsWith("--") }
+            .joinToString(separator = "\n")
+            .split(";")
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+    }
+
+    private fun cargarDatosPruebaSiFaltan(db: SQLiteDatabase) {
+        if (!existeTabla(db, DatabaseContract.Usuarios.TABLE_NAME)) return
+        if (existeUsuarioPorEmail(db, "maria.lopez@ues.edu.sv")) return
+
+        ejecutarScriptDesdeAssets(db, DML_DATOS_PRUEBA_ASSET)
+    }
+
+    private fun existeTabla(db: SQLiteDatabase, tableName: String): Boolean {
+        val cursor = db.rawQuery(
+            "SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?",
+            arrayOf(tableName)
+        )
+        cursor.use {
+            return it.moveToFirst()
+        }
+    }
+
+    private fun existeUsuarioPorEmail(db: SQLiteDatabase, email: String): Boolean {
+        val cursor = db.query(
+            DatabaseContract.Usuarios.TABLE_NAME,
+            arrayOf(DatabaseContract.Usuarios.ID_USUARIO),
+            "${DatabaseContract.Usuarios.EMAIL} = ?",
+            arrayOf(email),
+            null,
+            null,
+            null,
+            "1"
+        )
+        cursor.use {
+            return it.moveToFirst()
+        }
+    }
+
     private companion object {
+        const val DML_DATOS_PRUEBA_ASSET = "sqlite/02_dml_datos_prueba.sql"
+
         const val CREATE_ROLES_TABLE = """
             CREATE TABLE Roles (
                 id_rol INTEGER PRIMARY KEY AUTOINCREMENT,
