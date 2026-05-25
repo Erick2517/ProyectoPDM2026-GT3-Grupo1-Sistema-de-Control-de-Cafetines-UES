@@ -22,6 +22,7 @@ import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_ue
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.model.Usuario
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.domain.validation.AuthValidator
 import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.OperationResult
+import com.example.proyectopdm2026_gt3_grupo1_sistema_de_control_de_cafetines_uesgit.util.ApiClient
 
 class RegistroActivity : AppCompatActivity() {
     private lateinit var usuarioRepository: UsuarioRepository
@@ -139,10 +140,53 @@ class RegistroActivity : AppCompatActivity() {
         when (val resultado = usuarioRepository.registrarUsuario(usuario)) {
             is OperationResult.Error -> mostrarMensaje(resultado.message)
             is OperationResult.Success -> {
-                mostrarMensaje("Usuario registrado correctamente.")
-                navegarALogin()
+                mostrarMensaje("Usuario registrado localmente.")
+
+                registrarUsuarioEnApi(usuario) {
+                    navegarALogin()
+                }
             }
         }
+    }
+
+    private fun registrarUsuarioEnApi(usuario: Usuario, onFinalizado: () -> Unit) {
+        ApiClient.postForm(
+            "/usuarios",
+            mapOf(
+                "nombre" to usuario.nombre,
+                "email" to usuario.email,
+                "password" to usuario.password,
+                "carnet" to usuario.carnet,
+                "id_rol" to usuario.idRol.toString(),
+                "activo" to "1",
+                "id_ubicacion" to (usuario.idUbicacion?.toString() ?: "1")
+            ),
+            object : ApiClient.ApiCallback {
+                override fun onSuccess(response: String) {
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@RegistroActivity,
+                            "API registro correcto",
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                        onFinalizado()
+                    }
+                }
+
+                override fun onError(error: String) {
+                    runOnUiThread {
+                        Toast.makeText(
+                            this@RegistroActivity,
+                            "Error API registro: $error",
+                            Toast.LENGTH_LONG
+                        ).show()
+
+                        onFinalizado()
+                    }
+                }
+            }
+        )
     }
 
     private fun navegarALogin() {

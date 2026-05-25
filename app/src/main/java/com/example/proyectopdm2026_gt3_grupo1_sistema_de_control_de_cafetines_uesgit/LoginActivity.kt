@@ -89,13 +89,8 @@ class LoginActivity : AppCompatActivity() {
                 }
 
                 override fun onError(error: String) {
-                    runOnUiThread {
-                        Toast.makeText(
-                            this@LoginActivity,
-                            "Error API login: $error",
-                            Toast.LENGTH_LONG
-                        ).show()
-                    }
+                    // No se muestra al usuario final para no interrumpir el login local.
+                    // La app mantiene el inicio de sesión con SQLite aunque la cuenta no exista en la API.
                 }
             }
         )
